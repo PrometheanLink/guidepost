@@ -462,6 +462,7 @@ class GuidePost_Customers {
 
         $this->render_admin_notices();
         ?>
+        <div class="guidepost-customer-detail-layout">
         <div class="guidepost-customer-header">
             <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-customers' ), admin_url( 'admin.php' ) ) ); ?>" class="guidepost-back-link">
                 <span class="dashicons dashicons-arrow-left-alt"></span>
@@ -742,6 +743,7 @@ class GuidePost_Customers {
                 </div>
             </div>
         </div>
+        </div><!-- .guidepost-customer-detail-layout -->
         <?php
     }
 
