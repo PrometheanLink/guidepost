@@ -9,6 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// Load customer helper methods.
+require_once GUIDEPOST_PLUGIN_DIR . 'includes/admin/class-guidepost-customer-helpers.php';
+
 /**
  * Customers class - handles customer management admin
  */
@@ -64,7 +67,7 @@ class GuidePost_Customers {
      * Add customers menu
      */
     public function add_customers_menu() {
-        $flags_count = $this->get_active_flags_count();
+        $flags_count = GuidePost_Customer_Helpers::get_active_flags_count();
         $badge = $flags_count > 0 ? ' <span class="awaiting-mod">' . $flags_count . '</span>' : '';
 
         add_submenu_page(
@@ -364,12 +367,12 @@ class GuidePost_Customers {
                                 ), admin_url( 'admin.php' ) ),
                                 'delete_customer_' . $customer->id
                             );
-                            $flags = $this->get_customer_flags( $customer->id, true );
+                            $flags = GuidePost_Customer_Helpers::get_customer_flags( $customer->id, true );
                             ?>
                             <tr>
                                 <td class="column-customer">
                                     <div class="customer-info">
-                                        <div class="customer-avatar" style="background-color: <?php echo esc_attr( $this->get_status_color( $customer->status ) ); ?>">
+                                        <div class="customer-avatar" style="background-color: <?php echo esc_attr( GuidePost_Customer_Helpers::get_status_color( $customer->status ) ); ?>">
                                             <?php echo esc_html( $initials ); ?>
                                         </div>
                                         <div class="customer-details">
@@ -447,7 +450,7 @@ class GuidePost_Customers {
      */
     private function render_customer_detail() {
         $customer_id = isset( $_GET['customer_id'] ) ? absint( $_GET['customer_id'] ) : 0;
-        $customer = $this->get_customer( $customer_id );
+        $customer = GuidePost_Customer_Helpers::get_customer( $customer_id );
 
         if ( ! $customer ) {
             echo '<div class="notice notice-error"><p>' . esc_html__( 'Customer not found.', 'guidepost' ) . '</p></div>';
@@ -466,7 +469,7 @@ class GuidePost_Customers {
             </a>
 
             <div class="guidepost-customer-profile">
-                <div class="customer-avatar-large" style="background-color: <?php echo esc_attr( $this->get_status_color( $customer->status ) ); ?>">
+                <div class="customer-avatar-large" style="background-color: <?php echo esc_attr( GuidePost_Customer_Helpers::get_status_color( $customer->status ) ); ?>">
                     <?php echo esc_html( $initials ); ?>
                 </div>
                 <div class="customer-profile-info">
@@ -759,7 +762,7 @@ class GuidePost_Customers {
         <div class="guidepost-section">
             <h2><?php esc_html_e( 'Recent Appointments', 'guidepost' ); ?></h2>
             <?php
-            $appointments = $this->get_customer_appointments( $customer->id, 5 );
+            $appointments = GuidePost_Customer_Helpers::get_customer_appointments( $customer->id, 5 );
             if ( empty( $appointments ) ) :
             ?>
                 <p class="no-data"><?php esc_html_e( 'No appointments yet.', 'guidepost' ); ?></p>
@@ -815,7 +818,7 @@ class GuidePost_Customers {
 
         <!-- Pinned Notes -->
         <?php
-        $pinned_notes = $this->get_customer_notes( $customer->id, array( 'is_pinned' => 1, 'limit' => 3 ) );
+        $pinned_notes = GuidePost_Customer_Helpers::get_customer_notes( $customer->id, array( 'is_pinned' => 1, 'limit' => 3 ) );
         if ( ! empty( $pinned_notes ) ) :
         ?>
             <div class="guidepost-section">
@@ -868,10 +871,10 @@ class GuidePost_Customers {
         $appt_page = isset( $_GET['appt_page'] ) ? max( 1, intval( $_GET['appt_page'] ) ) : 1;
         $offset = ( $appt_page - 1 ) * $per_page;
 
-        $total_appointments = $this->get_customer_appointments_count( $customer->id );
+        $total_appointments = GuidePost_Customer_Helpers::get_customer_appointments_count( $customer->id );
         $total_pages = ceil( $total_appointments / $per_page );
 
-        $appointments = $this->get_customer_appointments( $customer->id, $per_page, $offset );
+        $appointments = GuidePost_Customer_Helpers::get_customer_appointments( $customer->id, $per_page, $offset );
         ?>
         <div class="guidepost-section">
             <div class="section-header">
@@ -993,7 +996,7 @@ class GuidePost_Customers {
      * @param object $customer Customer object.
      */
     private function render_purchases_tab( $customer ) {
-        $purchases = $this->get_customer_purchases( $customer->id );
+        $purchases = GuidePost_Customer_Helpers::get_customer_purchases( $customer->id );
         ?>
         <div class="guidepost-section">
             <div class="section-header">
@@ -1066,7 +1069,7 @@ class GuidePost_Customers {
         <div class="guidepost-section">
             <h2><?php esc_html_e( 'Credit History', 'guidepost' ); ?></h2>
             <?php
-            $credit_history = $this->get_credit_history( $customer->id );
+            $credit_history = GuidePost_Customer_Helpers::get_credit_history( $customer->id );
             if ( empty( $credit_history ) ) :
             ?>
                 <p class="no-data"><?php esc_html_e( 'No credit history.', 'guidepost' ); ?></p>
@@ -1104,7 +1107,7 @@ class GuidePost_Customers {
      * @param object $customer Customer object.
      */
     private function render_documents_tab( $customer ) {
-        $documents = $this->get_customer_documents( $customer->id );
+        $documents = GuidePost_Customer_Helpers::get_customer_documents( $customer->id );
         ?>
         <div class="guidepost-section">
             <div class="section-header">
@@ -1134,14 +1137,14 @@ class GuidePost_Customers {
                     <?php foreach ( $documents as $doc ) : ?>
                         <div class="document-card">
                             <div class="document-icon">
-                                <?php echo esc_html( $this->get_file_icon( $doc->file_type ) ); ?>
+                                <?php echo esc_html( GuidePost_Customer_Helpers::get_file_icon( $doc->file_type ) ); ?>
                             </div>
                             <div class="document-info">
                                 <a href="<?php echo esc_url( $doc->file_url ); ?>" class="document-name" target="_blank">
                                     <?php echo esc_html( $doc->filename ); ?>
                                 </a>
                                 <div class="document-meta">
-                                    <?php echo esc_html( $this->format_file_size( $doc->file_size ) ); ?> &middot;
+                                    <?php echo esc_html( GuidePost_Customer_Helpers::format_file_size( $doc->file_size ) ); ?> &middot;
                                     <?php echo esc_html( date_i18n( 'M j, Y', strtotime( $doc->created_at ) ) ); ?>
                                     <br>
                                     <?php echo 'customer' === $doc->uploaded_by ? esc_html__( 'Uploaded by customer', 'guidepost' ) : esc_html__( 'Uploaded by admin', 'guidepost' ); ?>
@@ -1263,7 +1266,7 @@ class GuidePost_Customers {
      * @param object $customer Customer object.
      */
     private function render_notes_tab( $customer ) {
-        $notes = $this->get_customer_notes( $customer->id );
+        $notes = GuidePost_Customer_Helpers::get_customer_notes( $customer->id );
         ?>
         <div class="guidepost-section">
             <div class="section-header">
@@ -1326,7 +1329,7 @@ class GuidePost_Customers {
      * @param object $customer Customer object.
      */
     private function render_sidebar( $customer ) {
-        $flags = $this->get_customer_flags( $customer->id, true );
+        $flags = GuidePost_Customer_Helpers::get_customer_flags( $customer->id, true );
         ?>
         <!-- Flags Section -->
         <div class="guidepost-sidebar-section">
@@ -1343,7 +1346,7 @@ class GuidePost_Customers {
                     <?php foreach ( $flags as $flag ) : ?>
                         <div class="guidepost-flag-item flag-type-<?php echo esc_attr( $flag->flag_type ); ?>" data-flag-id="<?php echo esc_attr( $flag->id ); ?>">
                             <div class="flag-icon">
-                                <span class="dashicons <?php echo esc_attr( $this->get_flag_icon( $flag->flag_type ) ); ?>"></span>
+                                <span class="dashicons <?php echo esc_attr( GuidePost_Customer_Helpers::get_flag_icon( $flag->flag_type ) ); ?>"></span>
                             </div>
                             <div class="flag-content">
                                 <span class="flag-message"><?php echo esc_html( $flag->message ); ?></span>
@@ -1422,7 +1425,7 @@ class GuidePost_Customers {
      * @param object $customer Customer object.
      */
     private function render_timeline( $customer ) {
-        $events = $this->get_timeline_events( $customer );
+        $events = GuidePost_Customer_Helpers::get_timeline_events( $customer );
         ?>
         <div class="customer-timeline">
             <?php foreach ( $events as $event ) : ?>
@@ -1443,7 +1446,7 @@ class GuidePost_Customers {
      */
     private function render_customer_form() {
         $customer_id = isset( $_GET['customer_id'] ) ? absint( $_GET['customer_id'] ) : 0;
-        $customer = $customer_id ? $this->get_customer( $customer_id ) : null;
+        $customer = $customer_id ? GuidePost_Customer_Helpers::get_customer( $customer_id ) : null;
         $is_edit = ! empty( $customer );
 
         $this->render_admin_notices();
@@ -1613,381 +1616,6 @@ class GuidePost_Customers {
         if ( isset( $_GET['message'] ) && isset( $messages[ $_GET['message'] ] ) ) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $messages[ $_GET['message'] ] ) . '</p></div>';
         }
-    }
-
-    // =========================================================================
-    // Data Retrieval Methods
-    // =========================================================================
-
-    /**
-     * Get customer by ID
-     *
-     * @param int $customer_id Customer ID.
-     * @return object|null
-     */
-    public function get_customer( $customer_id ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        return $wpdb->get_row( $wpdb->prepare(
-            "SELECT * FROM {$tables['customers']} WHERE id = %d",
-            $customer_id
-        ) );
-    }
-
-    /**
-     * Get customer appointments
-     *
-     * @param int $customer_id Customer ID.
-     * @param int $limit       Limit.
-     * @param int $offset      Offset.
-     * @return array
-     */
-    private function get_customer_appointments( $customer_id, $limit = 100, $offset = 0 ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        return $wpdb->get_results( $wpdb->prepare(
-            "SELECT a.*, s.name AS service_name, s.color AS service_color, p.name AS provider_name
-             FROM {$tables['appointments']} a
-             LEFT JOIN {$tables['services']} s ON a.service_id = s.id
-             LEFT JOIN {$tables['providers']} p ON a.provider_id = p.id
-             WHERE a.customer_id = %d
-             ORDER BY a.booking_date DESC, a.booking_time DESC
-             LIMIT %d OFFSET %d",
-            $customer_id,
-            $limit,
-            $offset
-        ) );
-    }
-
-    /**
-     * Get customer appointments count
-     *
-     * @param int $customer_id Customer ID.
-     * @return int
-     */
-    private function get_customer_appointments_count( $customer_id ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        return (int) $wpdb->get_var( $wpdb->prepare(
-            "SELECT COUNT(*) FROM {$tables['appointments']} WHERE customer_id = %d",
-            $customer_id
-        ) );
-    }
-
-    /**
-     * Get customer purchases
-     *
-     * @param int $customer_id Customer ID.
-     * @return array
-     */
-    private function get_customer_purchases( $customer_id ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        return $wpdb->get_results( $wpdb->prepare(
-            "SELECT * FROM {$tables['customer_purchases']}
-             WHERE customer_id = %d
-             ORDER BY purchase_date DESC",
-            $customer_id
-        ) );
-    }
-
-    /**
-     * Get customer documents
-     *
-     * @param int $customer_id Customer ID.
-     * @return array
-     */
-    private function get_customer_documents( $customer_id ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        return $wpdb->get_results( $wpdb->prepare(
-            "SELECT * FROM {$tables['customer_documents']}
-             WHERE customer_id = %d
-             ORDER BY created_at DESC",
-            $customer_id
-        ) );
-    }
-
-    /**
-     * Get customer notes
-     *
-     * @param int   $customer_id Customer ID.
-     * @param array $args        Arguments.
-     * @return array
-     */
-    private function get_customer_notes( $customer_id, $args = array() ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        $defaults = array(
-            'is_pinned' => null,
-            'limit'     => 100,
-        );
-        $args = wp_parse_args( $args, $defaults );
-
-        $where = array( 'n.customer_id = %d' );
-        $values = array( $customer_id );
-
-        if ( null !== $args['is_pinned'] ) {
-            $where[] = 'n.is_pinned = %d';
-            $values[] = $args['is_pinned'];
-        }
-
-        $where_clause = implode( ' AND ', $where );
-        $values[] = $args['limit'];
-
-        return $wpdb->get_results( $wpdb->prepare(
-            "SELECT n.*, u.display_name AS author_name
-             FROM {$tables['customer_notes']} n
-             LEFT JOIN {$wpdb->users} u ON n.user_id = u.ID
-             WHERE {$where_clause}
-             ORDER BY n.is_pinned DESC, n.created_at DESC
-             LIMIT %d",
-            $values
-        ) );
-    }
-
-    /**
-     * Get customer flags
-     *
-     * @param int  $customer_id Customer ID.
-     * @param bool $active_only Active only.
-     * @return array
-     */
-    public function get_customer_flags( $customer_id, $active_only = false ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        $where = 'customer_id = %d';
-        if ( $active_only ) {
-            $where .= ' AND is_active = 1 AND is_dismissed = 0';
-        }
-
-        return $wpdb->get_results( $wpdb->prepare(
-            "SELECT * FROM {$tables['customer_flags']}
-             WHERE {$where}
-             ORDER BY trigger_date ASC, created_at DESC",
-            $customer_id
-        ) );
-    }
-
-    /**
-     * Get credit history
-     *
-     * @param int $customer_id Customer ID.
-     * @return array
-     */
-    private function get_credit_history( $customer_id ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        return $wpdb->get_results( $wpdb->prepare(
-            "SELECT * FROM {$tables['credit_history']}
-             WHERE customer_id = %d
-             ORDER BY created_at DESC
-             LIMIT 50",
-            $customer_id
-        ) );
-    }
-
-    /**
-     * Get timeline events
-     *
-     * @param object $customer Customer object.
-     * @return array
-     */
-    private function get_timeline_events( $customer ) {
-        $events = array();
-
-        // First contact
-        if ( $customer->first_contact_date ) {
-            $events[] = array(
-                'date'  => date_i18n( 'M j, Y', strtotime( $customer->first_contact_date ) ),
-                'label' => __( 'First Contact', 'guidepost' ),
-                'type'  => 'first_contact',
-            );
-        }
-
-        // First purchase
-        $first_purchase = $this->get_first_purchase( $customer->id );
-        if ( $first_purchase ) {
-            $events[] = array(
-                'date'  => date_i18n( 'M j, Y', strtotime( $first_purchase->purchase_date ) ),
-                'label' => __( 'First Purchase', 'guidepost' ),
-                'type'  => 'first_purchase',
-            );
-        }
-
-        // First appointment
-        $first_appointment = $this->get_first_appointment( $customer->id );
-        if ( $first_appointment ) {
-            $events[] = array(
-                'date'  => date_i18n( 'M j, Y', strtotime( $first_appointment->booking_date ) ),
-                'label' => __( 'First Appointment', 'guidepost' ),
-                'type'  => 'first_appointment',
-            );
-        }
-
-        // Latest service
-        if ( $customer->last_booking_date ) {
-            $events[] = array(
-                'date'  => date_i18n( 'M j, Y', strtotime( $customer->last_booking_date ) ),
-                'label' => __( 'Latest Service', 'guidepost' ),
-                'type'  => 'latest_service',
-            );
-        }
-
-        // Next appointment
-        if ( $customer->next_booking_date && strtotime( $customer->next_booking_date ) >= strtotime( 'today' ) ) {
-            $events[] = array(
-                'date'  => date_i18n( 'M j, Y', strtotime( $customer->next_booking_date ) ),
-                'label' => __( 'Next Appointment', 'guidepost' ),
-                'type'  => 'next_appointment',
-            );
-        }
-
-        return $events;
-    }
-
-    /**
-     * Get first purchase
-     *
-     * @param int $customer_id Customer ID.
-     * @return object|null
-     */
-    private function get_first_purchase( $customer_id ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        return $wpdb->get_row( $wpdb->prepare(
-            "SELECT * FROM {$tables['customer_purchases']}
-             WHERE customer_id = %d
-             ORDER BY purchase_date ASC
-             LIMIT 1",
-            $customer_id
-        ) );
-    }
-
-    /**
-     * Get first appointment
-     *
-     * @param int $customer_id Customer ID.
-     * @return object|null
-     */
-    private function get_first_appointment( $customer_id ) {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        return $wpdb->get_row( $wpdb->prepare(
-            "SELECT * FROM {$tables['appointments']}
-             WHERE customer_id = %d
-             ORDER BY booking_date ASC
-             LIMIT 1",
-            $customer_id
-        ) );
-    }
-
-    /**
-     * Get active flags count
-     *
-     * @return int
-     */
-    public function get_active_flags_count() {
-        global $wpdb;
-        $tables = GuidePost_Database::get_table_names();
-
-        // Check if table exists
-        $table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $tables['customer_flags'] ) );
-        if ( ! $table_exists ) {
-            return 0;
-        }
-
-        return (int) $wpdb->get_var(
-            "SELECT COUNT(*) FROM {$tables['customer_flags']}
-             WHERE is_active = 1 AND is_dismissed = 0
-             AND (trigger_date IS NULL OR trigger_date <= CURDATE())"
-        );
-    }
-
-    // =========================================================================
-    // Helper Methods
-    // =========================================================================
-
-    /**
-     * Get status color
-     *
-     * @param string $status Status.
-     * @return string
-     */
-    private function get_status_color( $status ) {
-        $colors = array(
-            'active'   => '#95c93d',
-            'vip'      => '#c16107',
-            'paused'   => '#ffc107',
-            'inactive' => '#6c757d',
-            'prospect' => '#17a2b8',
-        );
-        return isset( $colors[ $status ] ) ? $colors[ $status ] : '#6c757d';
-    }
-
-    /**
-     * Get flag icon
-     *
-     * @param string $flag_type Flag type.
-     * @return string
-     */
-    private function get_flag_icon( $flag_type ) {
-        $icons = array(
-            'follow_up'   => 'dashicons-phone',
-            'inactive'    => 'dashicons-warning',
-            'birthday'    => 'dashicons-cake',
-            'vip_check'   => 'dashicons-star-filled',
-            'payment_due' => 'dashicons-money-alt',
-            'custom'      => 'dashicons-flag',
-        );
-        return isset( $icons[ $flag_type ] ) ? $icons[ $flag_type ] : 'dashicons-flag';
-    }
-
-    /**
-     * Get file icon
-     *
-     * @param string $file_type File type.
-     * @return string
-     */
-    private function get_file_icon( $file_type ) {
-        if ( strpos( $file_type, 'image' ) !== false ) {
-            return '🖼️';
-        } elseif ( strpos( $file_type, 'pdf' ) !== false ) {
-            return '📄';
-        } elseif ( strpos( $file_type, 'word' ) !== false || strpos( $file_type, 'document' ) !== false ) {
-            return '📝';
-        } elseif ( strpos( $file_type, 'sheet' ) !== false || strpos( $file_type, 'excel' ) !== false ) {
-            return '📊';
-        } elseif ( strpos( $file_type, 'video' ) !== false ) {
-            return '🎬';
-        } else {
-            return '📎';
-        }
-    }
-
-    /**
-     * Format file size
-     *
-     * @param int $bytes Bytes.
-     * @return string
-     */
-    private function format_file_size( $bytes ) {
-        if ( $bytes >= 1048576 ) {
-            return round( $bytes / 1048576, 2 ) . ' MB';
-        } elseif ( $bytes >= 1024 ) {
-            return round( $bytes / 1024, 2 ) . ' KB';
-        }
-        return $bytes . ' bytes';
     }
 
     // =========================================================================
@@ -2263,7 +1891,7 @@ class GuidePost_Customers {
     public function ajax_get_flags_count() {
         check_ajax_referer( 'guidepost_admin_nonce', 'nonce' );
 
-        wp_send_json_success( array( 'count' => $this->get_active_flags_count() ) );
+        wp_send_json_success( array( 'count' => GuidePost_Customer_Helpers::get_active_flags_count() ) );
     }
 
     /**
