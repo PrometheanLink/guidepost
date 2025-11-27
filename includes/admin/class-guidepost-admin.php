@@ -382,25 +382,24 @@ class GuidePost_Admin {
                     <?php esc_html_e( 'Customer Alerts & Flags', 'guidepost' ); ?>
                 </h2>
                 <div class="guidepost-flags-dashboard-list">
-                    <?php foreach ( $active_flags as $flag ) : ?>
-                        <?php
+                    <?php foreach ( $active_flags as $flag ) :
+                        // Determine priority class based on flag type
                         $priority_class = 'medium';
-                        if ( $flag->priority === 'high' ) {
+                        if ( in_array( $flag->flag_type, array( 'payment_due', 'follow_up' ), true ) ) {
                             $priority_class = 'high';
-                        } elseif ( $flag->priority === 'low' ) {
+                        } elseif ( in_array( $flag->flag_type, array( 'birthday', 'custom' ), true ) ) {
                             $priority_class = 'low';
                         }
-                        ?>
+                    ?>
                         <div class="guidepost-flag-dashboard-item priority-<?php echo esc_attr( $priority_class ); ?>">
                             <div class="guidepost-flag-dashboard-content">
-                                <strong class="guidepost-flag-dashboard-title"><?php echo esc_html( $flag->title ); ?></strong>
                                 <span class="guidepost-flag-dashboard-customer">
                                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=guidepost-customers&action=view&customer_id=' . $flag->customer_id ) ); ?>">
                                         <?php echo esc_html( $flag->first_name . ' ' . $flag->last_name ); ?>
                                     </a>
                                 </span>
-                                <?php if ( $flag->description ) : ?>
-                                    <p class="guidepost-flag-dashboard-desc"><?php echo esc_html( wp_trim_words( $flag->description, 15 ) ); ?></p>
+                                <?php if ( ! empty( $flag->message ) ) : ?>
+                                    <p class="guidepost-flag-dashboard-desc"><?php echo esc_html( wp_trim_words( $flag->message, 15 ) ); ?></p>
                                 <?php endif; ?>
                             </div>
                             <div class="guidepost-flag-dashboard-meta">
