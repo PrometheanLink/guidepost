@@ -1424,6 +1424,140 @@
     color: #721c24;
 }
 
+/* Customer List Table - Additional Styles for HTML class names */
+.guidepost-customers-page .customer-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.guidepost-customers-page .customer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.guidepost-customers-page .customer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.guidepost-customers-page .customer-name {
+    font-weight: 600;
+    color: var(--gp-text);
+    text-decoration: none;
+}
+
+.guidepost-customers-page .customer-name:hover {
+    color: var(--gp-primary);
+}
+
+.guidepost-customers-page .customer-company {
+    font-size: 12px;
+    color: var(--gp-text-light);
+    display: block;
+}
+
+.guidepost-customers-page .customer-flag-indicator {
+    color: #d63638;
+    margin-left: 5px;
+}
+
+.guidepost-customers-page .customer-flag-indicator .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.guidepost-customers-page .credit-badge {
+    background: var(--gp-success);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.guidepost-customers-page .no-credits,
+.guidepost-customers-page .no-data {
+    color: var(--gp-text-light);
+}
+
+/* Status Tabs */
+.guidepost-customers-filters {
+    margin-bottom: 20px;
+}
+
+.guidepost-status-tabs {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.guidepost-status-tabs a {
+    padding: 6px 12px;
+    text-decoration: none;
+    color: var(--gp-text-light);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.guidepost-status-tabs a:hover {
+    background: var(--gp-bg-light);
+    color: var(--gp-text);
+}
+
+.guidepost-status-tabs a.current {
+    background: var(--gp-primary);
+    color: #fff;
+}
+
+.guidepost-status-tabs .count {
+    opacity: 0.8;
+    margin-left: 3px;
+}
+
+.guidepost-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.guidepost-search-box {
+    display: flex;
+    gap: 8px;
+}
+
+.guidepost-search-box input[type="search"] {
+    min-width: 250px;
+    padding: 6px 12px;
+}
+
+/* Status colors for VIP and Prospect */
+.guidepost-status-vip {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffe082 100%);
+    color: #8d6e00;
+}
+
+.guidepost-status-prospect {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.guidepost-status-paused {
+    background: #fff3cd;
+    color: #856404;
+}
+
 /* ==========================================================================
    Customer Detail View
    ========================================================================== */

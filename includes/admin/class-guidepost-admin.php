@@ -242,15 +242,7 @@ class GuidePost_Admin {
             array( $this, 'render_providers_page' )
         );
 
-        // Customers
-        add_submenu_page(
-            'guidepost',
-            __( 'Customers', 'guidepost' ),
-            __( 'Customers', 'guidepost' ),
-            'manage_options',
-            'guidepost-customers',
-            array( $this, 'render_customers_page' )
-        );
+        // Customers - handled by GuidePost_Customers class
 
         // Settings
         add_submenu_page(
@@ -1195,18 +1187,6 @@ class GuidePost_Admin {
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=guidepost-providers' ) ); ?>" class="button"><?php esc_html_e( 'Cancel', 'guidepost' ); ?></a>
                 </p>
             </form>
-        </div>
-        <?php
-    }
-
-    /**
-     * Render customers page
-     */
-    public function render_customers_page() {
-        $this->render_admin_header( __( 'Customers', 'guidepost' ) );
-        ?>
-        <div class="guidepost-admin-content">
-            <p><?php esc_html_e( 'Customers management coming soon.', 'guidepost' ); ?></p>
         </div>
         <?php
     }

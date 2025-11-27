@@ -220,25 +220,42 @@ class GuidePost_Customers {
         $values = array();
 
         if ( $search ) {
-            $where[] = "(first_name LIKE %s OR last_name LIKE %s OR email LIKE %s OR company LIKE %s)";
+            $where[] = "(c.first_name LIKE %s OR c.last_name LIKE %s OR c.email LIKE %s OR c.company LIKE %s)";
             $search_term = '%' . $wpdb->esc_like( $search ) . '%';
             $values = array_merge( $values, array( $search_term, $search_term, $search_term, $search_term ) );
         }
 
         if ( $status ) {
-            $where[] = 'status = %s';
+            $where[] = 'c.status = %s';
             $values[] = $status;
         }
 
         $where_clause = implode( ' AND ', $where );
-        $order_clause = sanitize_sql_orderby( "$orderby $order" ) ?: 'created_at DESC';
+        $order_clause = sanitize_sql_orderby( "c.$orderby $order" ) ?: 'c.created_at DESC';
 
-        $query = "SELECT * FROM {$tables['customers']} WHERE {$where_clause} ORDER BY {$order_clause}";
+        // Query with calculated stats from appointments and payments
+        $query = "SELECT c.*,
+                         COUNT(DISTINCT a.id) as calc_total_appointments,
+                         COALESCE(SUM(CASE WHEN p.status = 'paid' THEN p.amount ELSE 0 END), 0) as calc_total_spent,
+                         MAX(CASE WHEN a.status IN ('completed', 'approved') THEN a.booking_date ELSE NULL END) as calc_last_booking_date
+                  FROM {$tables['customers']} c
+                  LEFT JOIN {$tables['appointments']} a ON c.id = a.customer_id
+                  LEFT JOIN {$tables['payments']} p ON a.id = p.appointment_id
+                  WHERE {$where_clause}
+                  GROUP BY c.id
+                  ORDER BY {$order_clause}";
         if ( ! empty( $values ) ) {
             $query = $wpdb->prepare( $query, $values );
         }
 
         $customers = $wpdb->get_results( $query );
+
+        // Use calculated values, falling back to stored values
+        foreach ( $customers as $customer ) {
+            $customer->total_appointments = $customer->calc_total_appointments ?: $customer->total_appointments;
+            $customer->total_spent = $customer->calc_total_spent ?: $customer->total_spent;
+            $customer->last_booking_date = $customer->calc_last_booking_date ?: $customer->last_booking_date;
+        }
 
         // Get status counts
         $status_counts = $wpdb->get_results(
