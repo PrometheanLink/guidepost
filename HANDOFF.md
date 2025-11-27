@@ -225,3 +225,71 @@ This session accomplished:
 13. Fixed dashboard flag widget warnings
 
 All changes committed and pushed to GitHub.
+
+---
+
+## Session Summary (Nov 27, 2025) - LATEST
+
+### The Big Fix
+
+**Root Cause Found**: The customer detail page was missing a CSS class (`guidepost-customer-detail-layout`) that JavaScript checks during initialization. Without this class, the JS `GuidePostCustomers.init()` function returned early and **never bound any event handlers** - causing ALL customer AJAX functionality to silently fail.
+
+**Solution**: Added a new class `guidepost-customer-detail-page` (with no CSS styling) to the wrapper div for JS detection purposes.
+
+### Commits This Session
+
+```
+898fa28 Fix: Use non-styling class for JS initialization detection
+6c2c398 Fix: Correct placement of JS initialization class
+3614a5c Fix: Add missing wrapper class for JavaScript initialization
+38d7a42 Refactor Phase 2: Wire customer helpers and remove duplicates
+```
+
+### Refactoring Progress
+
+| Phase | Status | Description |
+|-------|--------|-------------|
+| 1 | DONE | Created `class-guidepost-customer-helpers.php` with 16 static methods |
+| 2 | DONE | Wired helpers, replaced 20 calls, removed ~395 lines of duplicates |
+| 3 | TODO | Extract AJAX handlers to `class-guidepost-customer-ajax.php` |
+| 4 | TODO | Extract ICS methods to `class-guidepost-customer-ics.php` |
+| 5 | TODO | Extract form to `class-guidepost-customer-form.php` |
+| 6 | TODO | Extract detail view to `class-guidepost-customer-detail.php` |
+| 7 | TODO | Final cleanup and testing |
+
+**Main class size**: ~2,482 lines → ~2,087 lines (saved ~395 lines)
+
+### What's Now Working
+
+- Flags & Alerts (add/dismiss)
+- Adjust Credits button & modal
+- Change Status button & modal
+- Notes (add/pin/delete)
+- All customer detail page AJAX functionality
+
+### Next Session Tasks
+
+#### Priority 1: Test Each Tab
+Walk through each customer detail tab and verify features:
+
+1. **Overview Tab** - Timeline, recent appointments, pinned notes
+2. **Appointments Tab** - List loads, ICS export works
+3. **Purchases Tab** - History displays, totals correct
+4. **Documents Tab** - List loads, upload/download works
+5. **Communications Tab** - Email history displays
+6. **Notes Tab** - Full list, add/edit/delete/pin work
+
+#### Priority 2: Fix PHP Warnings
+Non-critical warnings in `class-guidepost-admin.php` (lines 388-402):
+- Undefined property: `$description`, `$priority`, `$title`
+- Related to flag/notification objects missing expected properties
+
+#### Priority 3: Continue Refactoring (Optional)
+Phase 3 extracts AJAX handlers - see `REFACTOR-PLAN.md` for details.
+
+### Deploy Command
+```powershell
+powershell -ExecutionPolicy Bypass -File "docker\scripts\deploy-plugin.ps1"
+```
+
+All changes committed and pushed to GitHub.
