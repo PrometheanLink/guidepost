@@ -135,7 +135,7 @@
     color: #721c24;
 }
 
-.guidepost-status-no_show {
+.guidepost-status-no-show {
     background: #e2e3e5;
     color: #383d41;
 }
@@ -502,7 +502,7 @@
     opacity: 0.8;
 }
 
-#guidepost-calendar .guidepost-event-no_show {
+#guidepost-calendar .guidepost-event-no-show {
     opacity: 0.5;
 }
 
@@ -994,12 +994,12 @@
     color: #0c5460;
 }
 
-.guidepost-template-type-follow_up {
+.guidepost-template-type-follow-up {
     background: #f5e6d3;
     color: #8a6d3b;
 }
 
-.guidepost-template-type-admin_notice {
+.guidepost-template-type-admin-notice {
     background: #fce4ec;
     color: #880e4f;
 }
@@ -1548,6 +1548,29 @@
 
 .guidepost-customers-table .column-actions {
     width: 12%;
+}
+
+/* Action buttons in tables */
+.column-actions {
+    white-space: nowrap;
+}
+
+.column-actions .button {
+    padding: 4px 8px;
+    min-height: auto;
+    line-height: 1;
+    margin-right: 4px;
+}
+
+.column-actions .button:last-child {
+    margin-right: 0;
+}
+
+.column-actions .button .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
 }
 
 /* Customers Page - uses WordPress native subsubsub styling */
@@ -2478,6 +2501,259 @@
     color: var(--gp-text-light);
 }
 
+/* Add Note Form (actual class names from PHP) */
+.add-note-form {
+    background: #fff;
+    border: 1px solid var(--gp-border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.add-note-form textarea#new-note-text {
+    width: 100%;
+    min-height: 120px;
+    padding: 15px;
+    border: 1px solid var(--gp-border);
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    font-family: inherit;
+    margin-bottom: 15px;
+}
+
+.add-note-form textarea#new-note-text:focus {
+    outline: none;
+    border-color: var(--gp-primary);
+    box-shadow: 0 0 0 3px rgba(193, 97, 7, 0.1);
+}
+
+.add-note-form .note-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.add-note-form .note-form-footer select {
+    padding: 8px 12px;
+    border: 1px solid var(--gp-border);
+    border-radius: 4px;
+    min-width: 140px;
+}
+
+/* Note Items (actual class names from PHP) */
+.guidepost-note-item {
+    background: #fff;
+    border: 1px solid var(--gp-border);
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--gp-secondary);
+    transition: box-shadow 0.2s;
+}
+
+.guidepost-note-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.guidepost-note-item.note-pinned {
+    border-left-color: #f0ad4e;
+    background: #fffef5;
+}
+
+.guidepost-note-item .note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.guidepost-note-item .note-type {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.guidepost-note-item .note-type-general {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.guidepost-note-item .note-type-session {
+    background: #d4edda;
+    color: #155724;
+}
+
+.guidepost-note-item .note-type-follow-up,
+.guidepost-note-item .note-type-follow_up {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.guidepost-note-item .note-type-alert {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.guidepost-note-item .note-type-private {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.guidepost-note-item .note-meta {
+    font-size: 12px;
+    color: var(--gp-text-light);
+    flex: 1;
+    text-align: right;
+    min-width: 150px;
+}
+
+.guidepost-note-item .note-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.guidepost-note-item .note-actions button {
+    background: none;
+    border: none;
+    padding: 5px 8px;
+    cursor: pointer;
+    color: var(--gp-text-light);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.guidepost-note-item .note-actions button:hover {
+    background: #f0f0f0;
+    color: var(--gp-primary);
+}
+
+.guidepost-note-item .note-actions .guidepost-note-delete:hover {
+    color: #dc3545;
+    background: #fff5f5;
+}
+
+.guidepost-note-item .note-content {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--gp-text);
+    padding-top: 5px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Flag Items (actual class names from PHP) */
+.guidepost-flag-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid var(--gp-border);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--gp-primary);
+}
+
+.guidepost-flag-item .flag-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff3e0;
+    border-radius: 50%;
+    color: var(--gp-primary);
+}
+
+.guidepost-flag-item .flag-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.guidepost-flag-item .flag-message {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gp-text);
+    margin-bottom: 3px;
+}
+
+.guidepost-flag-item .flag-date {
+    display: block;
+    font-size: 11px;
+    color: var(--gp-text-light);
+}
+
+.guidepost-flag-item .dismiss-flag-btn {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    color: var(--gp-text-light);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.guidepost-flag-item .dismiss-flag-btn:hover {
+    background: #fff5f5;
+    color: #dc3545;
+}
+
+/* Flag type colors */
+.guidepost-flag-item.flag-type-follow_up {
+    border-left-color: #17a2b8;
+}
+
+.guidepost-flag-item.flag-type-follow_up .flag-icon {
+    background: #d1ecf1;
+    color: #17a2b8;
+}
+
+.guidepost-flag-item.flag-type-payment_due {
+    border-left-color: #dc3545;
+}
+
+.guidepost-flag-item.flag-type-payment_due .flag-icon {
+    background: #f8d7da;
+    color: #dc3545;
+}
+
+.guidepost-flag-item.flag-type-inactive {
+    border-left-color: #6c757d;
+}
+
+.guidepost-flag-item.flag-type-inactive .flag-icon {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+.guidepost-flag-item.flag-type-vip_check {
+    border-left-color: #ffc107;
+}
+
+.guidepost-flag-item.flag-type-vip_check .flag-icon {
+    background: #fff3cd;
+    color: #d39e00;
+}
+
+.guidepost-flag-item.flag-type-birthday {
+    border-left-color: #e83e8c;
+}
+
+.guidepost-flag-item.flag-type-birthday .flag-icon {
+    background: #fce4ec;
+    color: #e83e8c;
+}
+
 /* ==========================================================================
    Credits Management
    ========================================================================== */
@@ -3256,67 +3532,7 @@
     font-size: 0.85em;
 }
 
-/* ==========================================================================
-   Modals
-   ========================================================================== */
-
-.guidepost-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 100000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.guidepost-modal-content {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow: auto;
-}
-
-.guidepost-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 25px;
-    border-bottom: 1px solid #eee;
-}
-
-.guidepost-modal-header h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--gp-text);
-}
-
-.guidepost-modal-close {
-    background: none;
-    border: none;
-    font-size: 28px;
-    color: #999;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    transition: color 0.2s;
-}
-
-.guidepost-modal-close:hover {
-    color: #333;
-}
-
-.guidepost-modal-body {
-    padding: 25px;
-}
-
+/* Modal Footer (for Customer Manager modals) */
 .guidepost-modal-footer {
     display: flex;
     justify-content: flex-end;

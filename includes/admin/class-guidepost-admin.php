@@ -47,6 +47,9 @@ class GuidePost_Admin {
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
         add_action( 'admin_init', array( $this, 'handle_form_submissions' ) );
+
+        // AJAX handlers
+        add_action( 'wp_ajax_guidepost_update_appointment_status', array( $this, 'ajax_update_appointment_status' ) );
     }
 
     /**
@@ -440,7 +443,7 @@ class GuidePost_Admin {
                                     <td><?php echo esc_html( $apt->first_name . ' ' . $apt->last_name ); ?></td>
                                     <td><?php echo esc_html( $apt->service_name ); ?></td>
                                     <td><?php echo esc_html( $apt->provider_name ); ?></td>
-                                    <td><span class="guidepost-status guidepost-status-<?php echo esc_attr( $apt->status ); ?>"><?php echo esc_html( ucfirst( $apt->status ) ); ?></span></td>
+                                    <td><span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $apt->status ) ); ?>"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $apt->status ) ) ); ?></span></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -730,7 +733,7 @@ class GuidePost_Admin {
                                         ?>
                                     </td>
                                     <td>
-                                        <span class="guidepost-status guidepost-status-<?php echo esc_attr( $apt->status ); ?>">
+                                        <span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $apt->status ) ); ?>">
                                             <?php echo esc_html( ucfirst( str_replace( '_', ' ', $apt->status ) ) ); ?>
                                         </span>
                                     </td>
@@ -828,7 +831,7 @@ class GuidePost_Admin {
                                     }
                                     ?>
                                 </td>
-                                <td><span class="guidepost-status guidepost-status-<?php echo esc_attr( $service->status ); ?>"><?php echo esc_html( ucfirst( $service->status ) ); ?></span></td>
+                                <td><span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $service->status ) ); ?>"><?php echo esc_html( ucfirst( $service->status ) ); ?></span></td>
                                 <td>
                                     <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-services', 'action' => 'edit', 'service_id' => $service->id ), admin_url( 'admin.php' ) ) ); ?>">
                                         <?php esc_html_e( 'Edit', 'guidepost' ); ?>
@@ -1034,7 +1037,7 @@ class GuidePost_Admin {
                                 <td><?php echo esc_html( $provider->email ); ?></td>
                                 <td><?php echo esc_html( $provider->phone ); ?></td>
                                 <td><?php echo esc_html( count( $services ) ); ?> <?php esc_html_e( 'services', 'guidepost' ); ?></td>
-                                <td><span class="guidepost-status guidepost-status-<?php echo esc_attr( $provider->status ); ?>"><?php echo esc_html( ucfirst( $provider->status ) ); ?></span></td>
+                                <td><span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $provider->status ) ); ?>"><?php echo esc_html( ucfirst( $provider->status ) ); ?></span></td>
                                 <td>
                                     <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-providers', 'action' => 'edit', 'provider_id' => $provider->id ), admin_url( 'admin.php' ) ) ); ?>">
                                         <?php esc_html_e( 'Edit', 'guidepost' ); ?>
@@ -1315,5 +1318,55 @@ class GuidePost_Admin {
                 <?php echo esc_html( $title ); ?>
             </h1>
         <?php
+    }
+
+    /**
+     * AJAX: Update appointment status
+     */
+    public function ajax_update_appointment_status() {
+        check_ajax_referer( 'guidepost_admin_nonce', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'guidepost' ) ) );
+        }
+
+        $appointment_id = isset( $_POST['appointment_id'] ) ? absint( $_POST['appointment_id'] ) : 0;
+        $new_status     = isset( $_POST['status'] ) ? sanitize_text_field( $_POST['status'] ) : '';
+
+        if ( ! $appointment_id || ! $new_status ) {
+            wp_send_json_error( array( 'message' => __( 'Invalid request.', 'guidepost' ) ) );
+        }
+
+        // Validate status
+        $valid_statuses = array( 'pending', 'approved', 'completed', 'canceled', 'no_show' );
+        if ( ! in_array( $new_status, $valid_statuses, true ) ) {
+            wp_send_json_error( array( 'message' => __( 'Invalid status.', 'guidepost' ) ) );
+        }
+
+        global $wpdb;
+        $tables = GuidePost_Database::get_table_names();
+
+        $updated = $wpdb->update(
+            $tables['appointments'],
+            array(
+                'status'     => $new_status,
+                'updated_at' => current_time( 'mysql' ),
+            ),
+            array( 'id' => $appointment_id ),
+            array( '%s', '%s' ),
+            array( '%d' )
+        );
+
+        if ( false === $updated ) {
+            wp_send_json_error( array( 'message' => __( 'Failed to update status.', 'guidepost' ) ) );
+        }
+
+        // Fire action for status change
+        do_action( 'guidepost_appointment_status_changed', $appointment_id, $new_status );
+
+        wp_send_json_success( array(
+            'message' => __( 'Status updated successfully.', 'guidepost' ),
+            'status'  => $new_status,
+        ) );
     }
 }

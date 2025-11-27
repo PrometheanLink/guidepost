@@ -85,8 +85,8 @@
                     self.showEventPopup(info.event, info.el);
                 },
                 eventDidMount: function(info) {
-                    // Add status class to event
-                    const status = info.event.extendedProps.status;
+                    // Add status class to event (convert underscores to dashes for CSS)
+                    const status = info.event.extendedProps.status.replace(/_/g, '-');
                     info.el.classList.add('guidepost-event-' + status);
 
                     // Add tooltip
@@ -139,7 +139,7 @@
                     '<p><strong>Date:</strong> ' + dateStr + '</p>' +
                     '<p><strong>Time:</strong> ' + startTime + ' - ' + endTime + ' (' + props.duration + ' min)</p>' +
                     '<p><strong>Price:</strong> $' + parseFloat(props.price).toFixed(2) + '</p>' +
-                    '<p><strong>Status:</strong> <span class="guidepost-status guidepost-status-' + props.status + '">' + (statusLabels[props.status] || props.status) + '</span></p>' +
+                    '<p><strong>Status:</strong> <span class="guidepost-status guidepost-status-' + props.status.replace(/_/g, '-') + '">' + (statusLabels[props.status] || props.status) + '</span></p>' +
                 '</div>' +
             '</div>');
 
@@ -685,7 +685,7 @@
                 url: guidepost_admin.ajax_url,
                 method: 'POST',
                 data: {
-                    action: 'guidepost_pin_note',
+                    action: 'guidepost_toggle_note_pin',
                     nonce: guidepost_admin.nonce,
                     note_id: noteId,
                     is_pinned: isPinned
@@ -715,7 +715,7 @@
                 url: guidepost_admin.ajax_url,
                 method: 'POST',
                 data: {
-                    action: 'guidepost_delete_note',
+                    action: 'guidepost_delete_customer_note',
                     nonce: guidepost_admin.nonce,
                     note_id: noteId
                 },

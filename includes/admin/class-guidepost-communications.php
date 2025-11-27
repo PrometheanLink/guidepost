@@ -706,7 +706,7 @@ class GuidePost_Communications {
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <span class="guidepost-template-type guidepost-template-type-<?php echo esc_attr( $template->notification_type ); ?>">
+                                <span class="guidepost-template-type guidepost-template-type-<?php echo esc_attr( str_replace( '_', '-', $template->notification_type ) ); ?>">
                                     <?php echo esc_html( ucwords( str_replace( '_', ' ', $template->notification_type ) ) ); ?>
                                 </span>
                             </td>
@@ -964,7 +964,7 @@ class GuidePost_Communications {
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <span class="guidepost-template-type guidepost-template-type-<?php echo esc_attr( $email->notification_type ); ?>">
+                                <span class="guidepost-template-type guidepost-template-type-<?php echo esc_attr( str_replace( '_', '-', $email->notification_type ) ); ?>">
                                     <?php echo esc_html( ucwords( str_replace( '_', ' ', $email->notification_type ) ) ); ?>
                                 </span>
                             </td>

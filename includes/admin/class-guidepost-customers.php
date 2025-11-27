@@ -394,7 +394,7 @@ class GuidePost_Customers {
                                     <?php endif; ?>
                                 </td>
                                 <td class="column-status">
-                                    <span class="guidepost-status guidepost-status-<?php echo esc_attr( $customer->status ); ?>">
+                                    <span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $customer->status ) ); ?>">
                                         <?php echo esc_html( ucfirst( $customer->status ) ); ?>
                                     </span>
                                 </td>
@@ -472,7 +472,7 @@ class GuidePost_Customers {
                 <div class="customer-profile-info">
                     <h1 class="customer-name">
                         <?php echo esc_html( $customer->first_name . ' ' . $customer->last_name ); ?>
-                        <span class="guidepost-status guidepost-status-<?php echo esc_attr( $customer->status ); ?>">
+                        <span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $customer->status ) ); ?>">
                             <?php echo esc_html( ucfirst( $customer->status ) ); ?>
                         </span>
                     </h1>
@@ -802,8 +802,8 @@ class GuidePost_Customers {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="guidepost-status guidepost-status-<?php echo esc_attr( $apt->status ); ?>">
-                                        <?php echo esc_html( ucfirst( $apt->status ) ); ?>
+                                    <span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $apt->status ) ); ?>">
+                                        <?php echo esc_html( ucfirst( str_replace( '_', ' ', $apt->status ) ) ); ?>
                                     </span>
                                 </td>
                             </tr>
@@ -942,13 +942,16 @@ class GuidePost_Customers {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="guidepost-status guidepost-status-<?php echo esc_attr( $apt->status ); ?>">
-                                        <?php echo esc_html( ucfirst( $apt->status ) ); ?>
+                                    <span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $apt->status ) ); ?>">
+                                        <?php echo esc_html( ucfirst( str_replace( '_', ' ', $apt->status ) ) ); ?>
                                     </span>
                                 </td>
-                                <td>
-                                    <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-appointments', 'action' => 'edit', 'id' => $apt->id ), admin_url( 'admin.php' ) ) ); ?>" class="button button-small">
-                                        <?php esc_html_e( 'View', 'guidepost' ); ?>
+                                <td class="column-actions">
+                                    <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-appointments', 'action' => 'view', 'id' => $apt->id ), admin_url( 'admin.php' ) ) ); ?>" class="button button-small" title="<?php esc_attr_e( 'View Details', 'guidepost' ); ?>">
+                                        <span class="dashicons dashicons-visibility"></span>
+                                    </a>
+                                    <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-appointments', 'action' => 'edit', 'id' => $apt->id ), admin_url( 'admin.php' ) ) ); ?>" class="button button-small button-primary" title="<?php esc_attr_e( 'Edit Appointment', 'guidepost' ); ?>">
+                                        <span class="dashicons dashicons-edit"></span>
                                     </a>
                                 </td>
                             </tr>
@@ -1211,7 +1214,7 @@ class GuidePost_Customers {
                                 <td><?php echo esc_html( date_i18n( 'M j, Y g:i A', strtotime( $email->created_at ) ) ); ?></td>
                                 <td><?php echo esc_html( $email->subject ); ?></td>
                                 <td>
-                                    <span class="guidepost-template-type guidepost-template-type-<?php echo esc_attr( $email->notification_type ); ?>">
+                                    <span class="guidepost-template-type guidepost-template-type-<?php echo esc_attr( str_replace( '_', '-', $email->notification_type ) ); ?>">
                                         <?php echo esc_html( ucwords( str_replace( '_', ' ', $email->notification_type ) ) ); ?>
                                     </span>
                                 </td>
@@ -1290,7 +1293,7 @@ class GuidePost_Customers {
                     <p class="no-data no-notes-message"><?php esc_html_e( 'No notes yet.', 'guidepost' ); ?></p>
                 <?php else : ?>
                     <?php foreach ( $notes as $note ) : ?>
-                        <div class="note-item <?php echo $note->is_pinned ? 'note-pinned' : ''; ?>" data-note-id="<?php echo esc_attr( $note->id ); ?>">
+                        <div class="guidepost-note-item <?php echo $note->is_pinned ? 'note-pinned' : ''; ?>" data-note-id="<?php echo esc_attr( $note->id ); ?>">
                             <div class="note-header">
                                 <span class="note-type note-type-<?php echo esc_attr( $note->note_type ); ?>">
                                     <?php echo esc_html( ucfirst( str_replace( '_', ' ', $note->note_type ) ) ); ?>
@@ -1300,10 +1303,10 @@ class GuidePost_Customers {
                                     <?php echo esc_html( date_i18n( 'M j, Y g:i A', strtotime( $note->created_at ) ) ); ?>
                                 </span>
                                 <div class="note-actions">
-                                    <button type="button" class="toggle-pin-btn" title="<?php echo $note->is_pinned ? esc_attr__( 'Unpin', 'guidepost' ) : esc_attr__( 'Pin', 'guidepost' ); ?>">
+                                    <button type="button" class="guidepost-note-pin" data-note-id="<?php echo esc_attr( $note->id ); ?>" data-pinned="<?php echo $note->is_pinned ? '1' : '0'; ?>" title="<?php echo $note->is_pinned ? esc_attr__( 'Unpin', 'guidepost' ) : esc_attr__( 'Pin', 'guidepost' ); ?>">
                                         <span class="dashicons <?php echo $note->is_pinned ? 'dashicons-star-filled' : 'dashicons-star-empty'; ?>"></span>
                                     </button>
-                                    <button type="button" class="delete-note-btn" title="<?php esc_attr_e( 'Delete', 'guidepost' ); ?>">
+                                    <button type="button" class="guidepost-note-delete" data-note-id="<?php echo esc_attr( $note->id ); ?>" title="<?php esc_attr_e( 'Delete', 'guidepost' ); ?>">
                                         <span class="dashicons dashicons-trash"></span>
                                     </button>
                                 </div>
@@ -1338,7 +1341,7 @@ class GuidePost_Customers {
                     <p class="no-data"><?php esc_html_e( 'No active flags.', 'guidepost' ); ?></p>
                 <?php else : ?>
                     <?php foreach ( $flags as $flag ) : ?>
-                        <div class="flag-item flag-type-<?php echo esc_attr( $flag->flag_type ); ?>" data-flag-id="<?php echo esc_attr( $flag->id ); ?>">
+                        <div class="guidepost-flag-item flag-type-<?php echo esc_attr( $flag->flag_type ); ?>" data-flag-id="<?php echo esc_attr( $flag->id ); ?>">
                             <div class="flag-icon">
                                 <span class="dashicons <?php echo esc_attr( $this->get_flag_icon( $flag->flag_type ) ); ?>"></span>
                             </div>
@@ -1348,7 +1351,7 @@ class GuidePost_Customers {
                                     <span class="flag-date"><?php echo esc_html( date_i18n( 'M j, Y', strtotime( $flag->trigger_date ) ) ); ?></span>
                                 <?php endif; ?>
                             </div>
-                            <button type="button" class="dismiss-flag-btn" title="<?php esc_attr_e( 'Dismiss', 'guidepost' ); ?>">
+                            <button type="button" class="dismiss-flag-btn" data-flag-id="<?php echo esc_attr( $flag->id ); ?>" title="<?php esc_attr_e( 'Dismiss', 'guidepost' ); ?>">
                                 <span class="dashicons dashicons-no-alt"></span>
                             </button>
                         </div>

@@ -103,12 +103,6 @@ final class GuidePost {
 
         // REST API
         add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
-
-        // AJAX handlers
-        add_action( 'wp_ajax_guidepost_get_availability', array( $this, 'ajax_get_availability' ) );
-        add_action( 'wp_ajax_nopriv_guidepost_get_availability', array( $this, 'ajax_get_availability' ) );
-        add_action( 'wp_ajax_guidepost_create_booking', array( $this, 'ajax_create_booking' ) );
-        add_action( 'wp_ajax_nopriv_guidepost_create_booking', array( $this, 'ajax_create_booking' ) );
     }
 
     /**
@@ -241,53 +235,6 @@ final class GuidePost {
         wp_localize_script( 'guidepost-admin', 'guidepost_admin', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce'    => wp_create_nonce( 'guidepost_admin_nonce' ),
-        ) );
-    }
-
-    /**
-     * AJAX: Get availability
-     */
-    public function ajax_get_availability() {
-        check_ajax_referer( 'guidepost_nonce', 'nonce' );
-
-        $service_id  = isset( $_POST['service_id'] ) ? absint( $_POST['service_id'] ) : 0;
-        $provider_id = isset( $_POST['provider_id'] ) ? absint( $_POST['provider_id'] ) : 0;
-        $month       = isset( $_POST['month'] ) ? sanitize_text_field( $_POST['month'] ) : '';
-
-        // TODO: Implement availability calculation
-        $availability = array(
-            'dates' => array(),
-            'message' => 'Availability calculation not yet implemented',
-        );
-
-        wp_send_json_success( $availability );
-    }
-
-    /**
-     * AJAX: Create booking
-     */
-    public function ajax_create_booking() {
-        check_ajax_referer( 'guidepost_nonce', 'nonce' );
-
-        // Validate and sanitize input
-        $service_id  = isset( $_POST['service_id'] ) ? absint( $_POST['service_id'] ) : 0;
-        $provider_id = isset( $_POST['provider_id'] ) ? absint( $_POST['provider_id'] ) : 0;
-        $date        = isset( $_POST['date'] ) ? sanitize_text_field( $_POST['date'] ) : '';
-        $time        = isset( $_POST['time'] ) ? sanitize_text_field( $_POST['time'] ) : '';
-        $first_name  = isset( $_POST['first_name'] ) ? sanitize_text_field( $_POST['first_name'] ) : '';
-        $last_name   = isset( $_POST['last_name'] ) ? sanitize_text_field( $_POST['last_name'] ) : '';
-        $email       = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
-        $phone       = isset( $_POST['phone'] ) ? sanitize_text_field( $_POST['phone'] ) : '';
-
-        // Validate required fields
-        if ( empty( $service_id ) || empty( $date ) || empty( $time ) || empty( $email ) ) {
-            wp_send_json_error( array( 'message' => __( 'Required fields are missing.', 'guidepost' ) ) );
-        }
-
-        // TODO: Implement booking creation
-        wp_send_json_success( array(
-            'message' => 'Booking creation not yet implemented',
-            'booking_id' => 0,
         ) );
     }
 }
