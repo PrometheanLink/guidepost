@@ -740,11 +740,23 @@ class GuidePost_Customers {
      * @param object $customer Customer object.
      */
     private function render_appointments_tab( $customer ) {
-        $appointments = $this->get_customer_appointments( $customer->id );
+        // Pagination
+        $per_page = 10;
+        $appt_page = isset( $_GET['appt_page'] ) ? max( 1, intval( $_GET['appt_page'] ) ) : 1;
+        $offset = ( $appt_page - 1 ) * $per_page;
+
+        $total_appointments = $this->get_customer_appointments_count( $customer->id );
+        $total_pages = ceil( $total_appointments / $per_page );
+
+        $appointments = $this->get_customer_appointments( $customer->id, $per_page, $offset );
         ?>
         <div class="guidepost-section">
             <div class="section-header">
-                <h2><?php esc_html_e( 'Appointments', 'guidepost' ); ?></h2>
+                <h2><?php esc_html_e( 'Appointments', 'guidepost' ); ?>
+                    <?php if ( $total_appointments > 0 ) : ?>
+                        <span class="count">(<?php echo esc_html( $total_appointments ); ?>)</span>
+                    <?php endif; ?>
+                </h2>
                 <div class="section-actions">
                     <button type="button" class="button" id="export-appointments-ics">
                         <span class="dashicons dashicons-download"></span>
@@ -820,6 +832,30 @@ class GuidePost_Customers {
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+
+                <?php if ( $total_pages > 1 ) : ?>
+                    <div class="guidepost-pagination">
+                        <?php
+                        $base_url = add_query_arg( array(
+                            'page'        => 'guidepost-customers',
+                            'action'      => 'view',
+                            'customer_id' => $customer->id,
+                            'tab'         => 'appointments',
+                        ), admin_url( 'admin.php' ) );
+
+                        if ( $appt_page > 1 ) : ?>
+                            <a href="<?php echo esc_url( add_query_arg( 'appt_page', $appt_page - 1, $base_url ) ); ?>" class="button">&laquo; <?php esc_html_e( 'Previous', 'guidepost' ); ?></a>
+                        <?php endif; ?>
+
+                        <span class="pagination-info">
+                            <?php printf( esc_html__( 'Page %1$d of %2$d', 'guidepost' ), $appt_page, $total_pages ); ?>
+                        </span>
+
+                        <?php if ( $appt_page < $total_pages ) : ?>
+                            <a href="<?php echo esc_url( add_query_arg( 'appt_page', $appt_page + 1, $base_url ) ); ?>" class="button"><?php esc_html_e( 'Next', 'guidepost' ); ?> &raquo;</a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
         <?php
@@ -1003,11 +1039,28 @@ class GuidePost_Customers {
      */
     private function render_communications_tab( $customer ) {
         require_once GUIDEPOST_PLUGIN_DIR . 'includes/class-guidepost-email.php';
-        $emails = GuidePost_Email::get_email_log( array( 'customer_id' => $customer->id, 'limit' => 50 ) );
+
+        // Pagination
+        $per_page = 10;
+        $comm_page = isset( $_GET['comm_page'] ) ? max( 1, intval( $_GET['comm_page'] ) ) : 1;
+        $offset = ( $comm_page - 1 ) * $per_page;
+
+        $total_emails = GuidePost_Email::get_email_log_count( array( 'customer_id' => $customer->id ) );
+        $total_pages = ceil( $total_emails / $per_page );
+
+        $emails = GuidePost_Email::get_email_log( array(
+            'customer_id' => $customer->id,
+            'limit'       => $per_page,
+            'offset'      => $offset,
+        ) );
         ?>
         <div class="guidepost-section">
             <div class="section-header">
-                <h2><?php esc_html_e( 'Communication History', 'guidepost' ); ?></h2>
+                <h2><?php esc_html_e( 'Communication History', 'guidepost' ); ?>
+                    <?php if ( $total_emails > 0 ) : ?>
+                        <span class="count">(<?php echo esc_html( $total_emails ); ?>)</span>
+                    <?php endif; ?>
+                </h2>
                 <div class="section-actions">
                     <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-communications', 'tab' => 'compose', 'customer_id' => $customer->id ), admin_url( 'admin.php' ) ) ); ?>" class="button button-primary">
                         <span class="dashicons dashicons-email-alt"></span>
@@ -1040,7 +1093,7 @@ class GuidePost_Customers {
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="guidepost-email-status guidepost-email-status-<?php echo esc_attr( $email->status ); ?>">
+                                    <span class="guidepost-email-status <?php echo esc_attr( $email->status ); ?>">
                                         <?php echo esc_html( ucfirst( $email->status ) ); ?>
                                     </span>
                                 </td>
@@ -1049,6 +1102,30 @@ class GuidePost_Customers {
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+
+                <?php if ( $total_pages > 1 ) : ?>
+                    <div class="guidepost-pagination">
+                        <?php
+                        $base_url = add_query_arg( array(
+                            'page'        => 'guidepost-customers',
+                            'action'      => 'view',
+                            'customer_id' => $customer->id,
+                            'tab'         => 'communications',
+                        ), admin_url( 'admin.php' ) );
+
+                        if ( $comm_page > 1 ) : ?>
+                            <a href="<?php echo esc_url( add_query_arg( 'comm_page', $comm_page - 1, $base_url ) ); ?>" class="button">&laquo; <?php esc_html_e( 'Previous', 'guidepost' ); ?></a>
+                        <?php endif; ?>
+
+                        <span class="pagination-info">
+                            <?php printf( esc_html__( 'Page %1$d of %2$d', 'guidepost' ), $comm_page, $total_pages ); ?>
+                        </span>
+
+                        <?php if ( $comm_page < $total_pages ) : ?>
+                            <a href="<?php echo esc_url( add_query_arg( 'comm_page', $comm_page + 1, $base_url ) ); ?>" class="button"><?php esc_html_e( 'Next', 'guidepost' ); ?> &raquo;</a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
         <?php
@@ -1437,9 +1514,10 @@ class GuidePost_Customers {
      *
      * @param int $customer_id Customer ID.
      * @param int $limit       Limit.
+     * @param int $offset      Offset.
      * @return array
      */
-    private function get_customer_appointments( $customer_id, $limit = 100 ) {
+    private function get_customer_appointments( $customer_id, $limit = 100, $offset = 0 ) {
         global $wpdb;
         $tables = GuidePost_Database::get_table_names();
 
@@ -1450,9 +1528,26 @@ class GuidePost_Customers {
              LEFT JOIN {$tables['providers']} p ON a.provider_id = p.id
              WHERE a.customer_id = %d
              ORDER BY a.booking_date DESC, a.booking_time DESC
-             LIMIT %d",
+             LIMIT %d OFFSET %d",
             $customer_id,
-            $limit
+            $limit,
+            $offset
+        ) );
+    }
+
+    /**
+     * Get customer appointments count
+     *
+     * @param int $customer_id Customer ID.
+     * @return int
+     */
+    private function get_customer_appointments_count( $customer_id ) {
+        global $wpdb;
+        $tables = GuidePost_Database::get_table_names();
+
+        return (int) $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$tables['appointments']} WHERE customer_id = %d",
+            $customer_id
         ) );
     }
 

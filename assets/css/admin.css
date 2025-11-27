@@ -3223,3 +3223,35 @@
     margin: 0;
     font-size: 13px;
 }
+
+/* ==========================================================================
+   Pagination
+   ========================================================================== */
+
+.guidepost-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px 0;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.guidepost-pagination .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.guidepost-pagination .pagination-info {
+    color: var(--gp-text-light);
+    font-size: 13px;
+}
+
+/* Section header count badge */
+.section-header h2 .count {
+    font-weight: 400;
+    color: var(--gp-text-light);
+    font-size: 0.85em;
+}

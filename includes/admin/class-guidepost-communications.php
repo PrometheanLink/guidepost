@@ -587,7 +587,44 @@ class GuidePost_Communications {
                     <div id="customer-info-content"></div>
                 </div>
 
-                <!-- Quick Tips Panel -->
+                <!-- Personalization Tags (moved above Quick Tips) -->
+                <div class="guidepost-info-panel">
+                    <h3>
+                        <span class="dashicons dashicons-tag"></span>
+                        <?php esc_html_e( 'Personalization Tags', 'guidepost' ); ?>
+                    </h3>
+                    <p class="description" style="margin-bottom: 12px;">
+                        <?php esc_html_e( 'Click a tag to copy it, then paste into your message.', 'guidepost' ); ?>
+                    </p>
+                    <div class="guidepost-tags-simple">
+                        <div class="guidepost-tag-item" data-tag="{{customer_first_name}}" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{customer_first_name}}</code>
+                            <span><?php esc_html_e( 'First name', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" data-tag="{{customer_name}}" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{customer_name}}</code>
+                            <span><?php esc_html_e( 'Full name', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" data-tag="{{appointment_date}}" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{appointment_date}}</code>
+                            <span><?php esc_html_e( 'Appt date', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" data-tag="{{appointment_time}}" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{appointment_time}}</code>
+                            <span><?php esc_html_e( 'Appt time', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" data-tag="{{service_name}}" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{service_name}}</code>
+                            <span><?php esc_html_e( 'Service', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" data-tag="{{company_name}}" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{company_name}}</code>
+                            <span><?php esc_html_e( 'Your business', 'guidepost' ); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Tips Panel (moved below Personalization Tags) -->
                 <div class="guidepost-info-panel guidepost-tips-panel">
                     <h3>
                         <span class="dashicons dashicons-lightbulb"></span>
@@ -598,43 +635,6 @@ class GuidePost_Communications {
                         <li><?php esc_html_e( 'Templates automatically personalize with customer info', 'guidepost' ); ?></li>
                         <li><?php esc_html_e( 'Preview before sending to check everything looks right', 'guidepost' ); ?></li>
                     </ul>
-                </div>
-
-                <!-- Common Personalization Tags -->
-                <div class="guidepost-info-panel">
-                    <h3>
-                        <span class="dashicons dashicons-tag"></span>
-                        <?php esc_html_e( 'Personalization Tags', 'guidepost' ); ?>
-                    </h3>
-                    <p class="description" style="margin-bottom: 12px;">
-                        <?php esc_html_e( 'Use these tags in your custom message. They\'ll be replaced with actual values.', 'guidepost' ); ?>
-                    </p>
-                    <div class="guidepost-tags-simple">
-                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
-                            <code>{{customer_first_name}}</code>
-                            <span><?php esc_html_e( 'First name', 'guidepost' ); ?></span>
-                        </div>
-                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
-                            <code>{{customer_name}}</code>
-                            <span><?php esc_html_e( 'Full name', 'guidepost' ); ?></span>
-                        </div>
-                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
-                            <code>{{appointment_date}}</code>
-                            <span><?php esc_html_e( 'Appt date', 'guidepost' ); ?></span>
-                        </div>
-                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
-                            <code>{{appointment_time}}</code>
-                            <span><?php esc_html_e( 'Appt time', 'guidepost' ); ?></span>
-                        </div>
-                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
-                            <code>{{service_name}}</code>
-                            <span><?php esc_html_e( 'Service', 'guidepost' ); ?></span>
-                        </div>
-                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
-                            <code>{{company_name}}</code>
-                            <span><?php esc_html_e( 'Your business', 'guidepost' ); ?></span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -975,9 +975,20 @@ class GuidePost_Communications {
                             </td>
                             <td>
                                 <div class="guidepost-email-log-actions">
-                                    <button type="button" class="button button-small guidepost-view-email" data-email-id="<?php echo esc_attr( $email->id ); ?>">
-                                        <?php esc_html_e( 'View', 'guidepost' ); ?>
-                                    </button>
+                                    <?php if ( $email->customer_id ) : ?>
+                                        <a href="<?php echo esc_url( add_query_arg( array(
+                                            'page'        => 'guidepost-customers',
+                                            'action'      => 'view',
+                                            'customer_id' => $email->customer_id,
+                                            'tab'         => 'communications',
+                                        ), admin_url( 'admin.php' ) ) ); ?>" class="button button-small">
+                                            <?php esc_html_e( 'View', 'guidepost' ); ?>
+                                        </a>
+                                    <?php else : ?>
+                                        <button type="button" class="button button-small guidepost-view-email" data-email-id="<?php echo esc_attr( $email->id ); ?>">
+                                            <?php esc_html_e( 'View', 'guidepost' ); ?>
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>

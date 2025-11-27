@@ -257,8 +257,11 @@
                 }
             });
 
-            // Variable copy
+            // Variable copy (old style)
             $(document).on('click', '.guidepost-var-copy', this.copyVariable.bind(this));
+
+            // Personalization tag copy (new style)
+            $(document).on('click', '.guidepost-tag-item', this.copyTagToClipboard.bind(this));
 
             // View email in log
             $(document).on('click', '.guidepost-view-email', this.viewEmail.bind(this));
@@ -506,6 +509,46 @@
                 setTimeout(function() {
                     $el.css('background-color', originalBg);
                 }, 300);
+            });
+        },
+
+        /**
+         * Copy personalization tag to clipboard
+         */
+        copyTagToClipboard: function(e) {
+            const $item = $(e.currentTarget);
+            const tag = $item.data('tag') || $item.find('code').text();
+
+            if (!tag) return;
+
+            navigator.clipboard.writeText(tag).then(function() {
+                // Visual feedback - add copied class
+                $item.addClass('copied');
+
+                // Show "Copied!" tooltip
+                const $code = $item.find('code');
+                const originalText = $code.text();
+                $code.text('Copied!');
+
+                setTimeout(function() {
+                    $item.removeClass('copied');
+                    $code.text(originalText);
+                }, 1500);
+            }).catch(function(err) {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = tag;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+
+                $item.addClass('copied');
+                setTimeout(function() {
+                    $item.removeClass('copied');
+                }, 1500);
             });
         },
 
