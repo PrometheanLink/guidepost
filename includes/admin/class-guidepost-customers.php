@@ -187,7 +187,7 @@ class GuidePost_Customers {
      */
     public function render_customers_page() {
         $action = isset( $_GET['action'] ) ? sanitize_text_field( $_GET['action'] ) : 'list';
-        $detail_class = ( 'view' === $action ) ? ' guidepost-customer-detail-layout' : '';
+        $detail_class = ( 'view' === $action ) ? ' guidepost-customer-detail-page' : '';
 
         echo '<div class="wrap guidepost-admin guidepost-customers-page' . esc_attr( $detail_class ) . '">';
 

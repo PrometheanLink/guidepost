@@ -578,7 +578,7 @@
          * Initialize
          */
         init: function() {
-            if (!$('.guidepost-customer-detail-layout, .guidepost-customers-table').length) {
+            if (!$('.guidepost-customer-detail-page, .guidepost-customers-table').length) {
                 return;
             }
 
