@@ -187,8 +187,9 @@ class GuidePost_Customers {
      */
     public function render_customers_page() {
         $action = isset( $_GET['action'] ) ? sanitize_text_field( $_GET['action'] ) : 'list';
+        $detail_class = ( 'view' === $action ) ? ' guidepost-customer-detail-layout' : '';
 
-        echo '<div class="wrap guidepost-admin guidepost-customers-page">';
+        echo '<div class="wrap guidepost-admin guidepost-customers-page' . esc_attr( $detail_class ) . '">';
 
         switch ( $action ) {
             case 'view':
@@ -462,7 +463,6 @@ class GuidePost_Customers {
 
         $this->render_admin_notices();
         ?>
-        <div class="guidepost-customer-detail-layout">
         <div class="guidepost-customer-header">
             <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-customers' ), admin_url( 'admin.php' ) ) ); ?>" class="guidepost-back-link">
                 <span class="dashicons dashicons-arrow-left-alt"></span>
@@ -743,7 +743,6 @@ class GuidePost_Customers {
                 </div>
             </div>
         </div>
-        </div><!-- .guidepost-customer-detail-layout -->
         <?php
     }
 
