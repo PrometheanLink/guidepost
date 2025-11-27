@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuidePost User Guide</title>
+    <style>
+        :root {
+            --gp-primary: #c16107;
+            --gp-primary-dark: #a85206;
+            --gp-secondary: #1e262d;
+            --gp-success: #95c93d;
+            --gp-warning: #ffc107;
+            --gp-danger: #dc3545;
+            --gp-info: #17a2b8;
+            --gp-light: #f8f9fa;
+            --gp-border: #e0e0e0;
+            --gp-text: #333;
+            --gp-text-light: #666;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            line-height: 1.6;
+            color: var(--gp-text);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+
+        /* Header */
+        .guide-header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--gp-primary) 0%, var(--gp-primary-dark) 100%);
+            color: #fff;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+
+        .guide-header h1 {
+            margin: 0 0 10px;
+            font-size: 2.5em;
+        }
+
+        .guide-header .version {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .guide-header .tagline {
+            margin-top: 15px;
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: var(--gp-light);
+            border: 1px solid var(--gp-border);
+            border-radius: 8px;
+            padding: 25px 30px;
+            margin-bottom: 40px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            color: var(--gp-secondary);
+            border-bottom: 2px solid var(--gp-primary);
+            padding-bottom: 10px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .toc a {
+            color: var(--gp-primary);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            display: block;
+            transition: background 0.2s;
+        }
+
+        .toc a:hover {
+            background: rgba(193, 97, 7, 0.1);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 50px;
+            scroll-margin-top: 20px;
+        }
+
+        h2 {
+            color: var(--gp-secondary);
+            border-bottom: 3px solid var(--gp-primary);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: var(--gp-primary-dark);
+            margin-top: 30px;
+        }
+
+        h4 {
+            color: var(--gp-secondary);
+            margin-top: 25px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--gp-border);
+        }
+
+        th {
+            background: var(--gp-secondary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--gp-light);
+        }
+
+        tr:hover {
+            background: rgba(193, 97, 7, 0.05);
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.tip {
+            background: #e7f5e7;
+            border-left: 4px solid var(--gp-success);
+        }
+
+        .info-box.warning {
+            background: #fff8e6;
+            border-left: 4px solid var(--gp-warning);
+        }
+
+        .info-box.note {
+            background: #e6f3f7;
+            border-left: 4px solid var(--gp-info);
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Code/Tags */
+        code {
+            background: #f4f4f4;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: "SF Mono", Monaco, "Courier New", monospace;
+            font-size: 0.9em;
+            color: var(--gp-primary-dark);
+        }
+
+        /* Lists */
+        ul, ol {
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .status-active { background: #d4edda; color: #155724; }
+        .status-vip { background: #ffecd0; color: #8a5a00; }
+        .status-paused { background: #fff3cd; color: #856404; }
+        .status-inactive { background: #e9ecef; color: #495057; }
+        .status-prospect { background: #cce5ff; color: #004085; }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .feature-card {
+            background: #fff;
+            border: 1px solid var(--gp-border);
+            border-radius: 8px;
+            padding: 20px;
+            transition: box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            color: var(--gp-primary);
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .steps li {
+            counter-increment: step;
+            padding-left: 50px;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--gp-primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .guide-footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 2px solid var(--gp-border);
+            color: var(--gp-text-light);
+        }
+
+        .guide-footer .company {
+            font-size: 1.2em;
+            color: var(--gp-secondary);
+            font-weight: 600;
+        }
+
+        .guide-footer .developer {
+            margin-top: 5px;
+        }
+
+        /* Print Styles */
+        @media print {
+            .guide-header {
+                background: var(--gp-primary) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .guide-header h1 {
+                font-size: 1.8em;
+            }
+
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="guide-header">
+    <h1>📍 GuidePost User Guide</h1>
+    <div class="version">Version 1.0.0</div>
+    <div class="tagline">A comprehensive booking and customer management plugin for WordPress</div>
+</header>
+
+<nav class="toc">
+    <h2>Table of Contents</h2>
+    <div class="toc-grid">
+        <a href="#introduction">1. Introduction</a>
+        <a href="#getting-started">2. Getting Started</a>
+        <a href="#dashboard">3. Dashboard</a>
+        <a href="#customers">4. Customer Management</a>
+        <a href="#appointments">5. Appointments</a>
+        <a href="#services">6. Services</a>
+        <a href="#providers">7. Providers</a>
+        <a href="#communications">8. Communications</a>
+        <a href="#settings">9. Settings</a>
+        <a href="#troubleshooting">10. Troubleshooting</a>
+    </div>
+</nav>
+
+<!-- INTRODUCTION -->
+<section id="introduction" class="section">
+    <h2>1. Introduction</h2>
+
+    <h3>What is GuidePost?</h3>
+    <p>GuidePost is a powerful WordPress plugin that combines appointment booking with comprehensive customer relationship management (CRM). Built specifically for coaching businesses, consultants, and service providers.</p>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h4>📅 Manage Appointments</h4>
+            <p>Schedule, track, and organize client sessions with an intuitive calendar interface.</p>
+        </div>
+        <div class="feature-card">
+            <h4>👥 Track Relationships</h4>
+            <p>Maintain detailed customer profiles with notes, flags, credits, and complete history.</p>
+        </div>
+        <div class="feature-card">
+            <h4>💳 Handle Payments</h4>
+            <p>Integrate with WooCommerce for seamless payment processing.</p>
+        </div>
+        <div class="feature-card">
+            <h4>📧 Communicate Effectively</h4>
+            <p>Send professional emails using customizable templates with personalization.</p>
+        </div>
+        <div class="feature-card">
+            <h4>📊 Monitor Business</h4>
+            <p>View key metrics and alerts from your dashboard at a glance.</p>
+        </div>
+        <div class="feature-card">
+            <h4>🎯 Never Miss Follow-ups</h4>
+            <p>Smart flags and alerts keep you on top of every customer relationship.</p>
+        </div>
+    </div>
+</section>
+
+<!-- GETTING STARTED -->
+<section id="getting-started" class="section">
+    <h2>2. Getting Started</h2>
+
+    <h3>Accessing GuidePost</h3>
+    <p>After installation, GuidePost appears in your WordPress admin sidebar. Click <strong>GuidePost</strong> to access all features.</p>
+
+    <h3>Initial Setup Checklist</h3>
+    <ol class="steps">
+        <li><strong>Configure Settings</strong> – Set your business name, timezone, and email preferences</li>
+        <li><strong>Add Services</strong> – Create your service offerings with pricing and duration</li>
+        <li><strong>Add Providers</strong> – Set up yourself and any team members</li>
+        <li><strong>Set Working Hours</strong> – Define when each provider is available</li>
+        <li><strong>Customize Email Templates</strong> – Brand your customer communications</li>
+        <li><strong>Add Your First Customer</strong> – Start building your client base</li>
+    </ol>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="section">
+    <h2>3. Dashboard</h2>
+
+    <p>The Dashboard provides an at-a-glance view of your business health.</p>
+
+    <h3>KPI Widgets</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Widget</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Today's Appointments</strong></td>
+                <td>Number of sessions scheduled for today</td>
+            </tr>
+            <tr>
+                <td><strong>Pending Appointments</strong></td>
+                <td>Sessions awaiting confirmation</td>
+            </tr>
+            <tr>
+                <td><strong>Total Customers</strong></td>
+                <td>Your complete customer count</td>
+            </tr>
+            <tr>
+                <td><strong>Monthly Revenue</strong></td>
+                <td>Income for the current month</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Flags & Alerts Widget</h3>
+    <p>This widget shows customers requiring attention:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Flag Type</th>
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>🔔 Follow Up</td><td>Clients needing outreach</td></tr>
+            <tr><td>💰 Payment Due</td><td>Outstanding balances</td></tr>
+            <tr><td>⏸️ Inactive</td><td>Customers who haven't booked recently</td></tr>
+            <tr><td>⭐ VIP Check-in</td><td>High-value clients to nurture</td></tr>
+            <tr><td>🎂 Birthday</td><td>Upcoming client birthdays</td></tr>
+            <tr><td>🚩 Custom</td><td>Your own custom alerts</td></tr>
+        </tbody>
+    </table>
+
+    <div class="info-box tip">
+        <div class="info-box-title">💡 Tip</div>
+        Click any flag to go directly to that customer's profile.
+    </div>
+</section>
+
+<!-- CUSTOMER MANAGEMENT -->
+<section id="customers" class="section">
+    <h2>4. Customer Management</h2>
+
+    <p>The Customer Manager is your complete CRM system. Access via <strong>GuidePost → Customers</strong>.</p>
+
+    <h3>Customer Statuses</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Description</th>
+                <th>When to Use</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>Regular, engaged customers</td>
+                <td>Currently booking or recently active</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-vip">VIP</span></td>
+                <td>High-value clients</td>
+                <td>Top customers deserving special attention</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-paused">Paused</span></td>
+                <td>Temporarily inactive</td>
+                <td>On vacation, taking a break</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-inactive">Inactive</span></td>
+                <td>Haven't booked in a while</td>
+                <td>May need re-engagement</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-prospect">Prospect</span></td>
+                <td>Potential customers</td>
+                <td>Inquired but not yet booked</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Customer Detail Page</h3>
+    <p>Click any customer to view their complete profile with these tabs:</p>
+
+    <h4>📊 Overview Tab</h4>
+    <ul>
+        <li><strong>Customer Journey Timeline</strong> – Key milestones (first contact, first purchase, etc.)</li>
+        <li><strong>Recent Appointments</strong> – Last 5 sessions with details</li>
+        <li><strong>Pinned Notes</strong> – Important notes you've highlighted</li>
+    </ul>
+
+    <h4>📅 Appointments Tab</h4>
+    <p>Complete appointment history with date, service, provider, status, and ICS export.</p>
+
+    <h4>💳 Purchases Tab</h4>
+    <p>Financial history including purchase date, description, amount, and credits granted.</p>
+
+    <h4>📁 Documents Tab</h4>
+    <p>File management for contracts, session materials, and customer uploads.</p>
+
+    <h4>📧 Communications Tab</h4>
+    <p>Email history showing all messages sent to this customer.</p>
+
+    <h4>📝 Notes Tab</h4>
+    <p>Your private notes organized by type: General, Session, Follow-up, Alert, Private.</p>
+
+    <h3>Working with Notes</h3>
+    <ol class="steps">
+        <li>Go to customer's <strong>Notes</strong> tab</li>
+        <li>Type your note in the text area</li>
+        <li>Select note type from dropdown</li>
+        <li>Click <strong>Add Note</strong></li>
+    </ol>
+
+    <div class="info-box tip">
+        <div class="info-box-title">💡 Pin Important Notes</div>
+        Click the pin icon on any note to highlight it. Pinned notes appear in the Overview tab for quick reference.
+    </div>
+
+    <h3>Managing Credits</h3>
+    <p>Credits allow customers to pre-pay for sessions (package deals).</p>
+    <ol class="steps">
+        <li>Click <strong>Adjust Credits</strong> in the sidebar</li>
+        <li>Select <strong>Add</strong> or <strong>Subtract</strong> credits</li>
+        <li>Enter amount and reason</li>
+        <li>Click <strong>Update Credits</strong></li>
+    </ol>
+
+    <h3>Managing Flags</h3>
+    <p>Flags help you track important follow-ups and never miss a customer touchpoint.</p>
+    <ol class="steps">
+        <li>Click the <strong>flag button</strong> in the sidebar</li>
+        <li>Select flag type (Follow Up, Payment Due, etc.)</li>
+        <li>Enter your message</li>
+        <li>Set trigger date (optional)</li>
+        <li>Click <strong>Add Flag</strong></li>
+    </ol>
+</section>
+
+<!-- APPOINTMENTS -->
+<section id="appointments" class="section">
+    <h2>5. Appointments</h2>
+
+    <p>Access via <strong>GuidePost → Appointments</strong></p>
+
+    <h3>Appointment Statuses</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>🟡 Pending</td><td>Awaiting confirmation</td></tr>
+            <tr><td>🟢 Approved</td><td>Confirmed and scheduled</td></tr>
+            <tr><td>🔵 Completed</td><td>Session finished</td></tr>
+            <tr><td>🔴 Canceled</td><td>Appointment canceled</td></tr>
+            <tr><td>⚫ No Show</td><td>Customer didn't attend</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Calendar View</h3>
+    <p>Click <strong>Calendar View</strong> for a visual calendar showing appointments color-coded by service. Switch between monthly, weekly, or daily views.</p>
+
+    <h3>ICS Calendar Export</h3>
+    <ol class="steps">
+        <li>Click the <strong>calendar icon</strong> on any appointment</li>
+        <li>Download the .ics file</li>
+        <li>Import into Google Calendar, Outlook, or Apple Calendar</li>
+    </ol>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="section">
+    <h2>6. Services</h2>
+
+    <p>Access via <strong>GuidePost → Services</strong></p>
+
+    <h3>Service Properties</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Name</strong></td><td>Service title shown to customers</td></tr>
+            <tr><td><strong>Description</strong></td><td>Detailed service description</td></tr>
+            <tr><td><strong>Duration</strong></td><td>Length in minutes</td></tr>
+            <tr><td><strong>Price</strong></td><td>Cost per session</td></tr>
+            <tr><td><strong>Color</strong></td><td>Calendar display color</td></tr>
+            <tr><td><strong>Appointment Mode</strong></td><td>In-Person, Virtual, or Hybrid</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Adding a Service</h3>
+    <ol class="steps">
+        <li>Click <strong>Add Service</strong></li>
+        <li>Enter service name</li>
+        <li>Set duration and price</li>
+        <li>Choose a display color</li>
+        <li>Select appointment mode</li>
+        <li>Add description</li>
+        <li>Click <strong>Save Service</strong></li>
+    </ol>
+</section>
+
+<!-- PROVIDERS -->
+<section id="providers" class="section">
+    <h2>7. Providers</h2>
+
+    <p>Access via <strong>GuidePost → Providers</strong></p>
+
+    <h3>Setting Working Hours</h3>
+    <ol class="steps">
+        <li>Click <strong>Edit</strong> on the provider</li>
+        <li>Go to <strong>Working Hours</strong> section</li>
+        <li>For each day, toggle on/off and set start/end times</li>
+        <li>Click <strong>Save Changes</strong></li>
+    </ol>
+
+    <h3>Managing Days Off</h3>
+    <p>For vacations and holidays:</p>
+    <ol class="steps">
+        <li>Go to provider's <strong>Days Off</strong> tab</li>
+        <li>Click <strong>Add Days Off</strong></li>
+        <li>Select start and end dates</li>
+        <li>Enter reason (optional)</li>
+        <li>Click <strong>Save</strong></li>
+    </ol>
+
+    <div class="info-box note">
+        <div class="info-box-title">📝 Note</div>
+        Days off automatically block all bookings for that provider during the specified period.
+    </div>
+</section>
+
+<!-- COMMUNICATIONS -->
+<section id="communications" class="section">
+    <h2>8. Communications</h2>
+
+    <p>Access via <strong>GuidePost → Communications</strong></p>
+
+    <h3>Email Templates</h3>
+    <p>GuidePost includes pre-built templates for:</p>
+    <ul>
+        <li>Appointment Confirmation</li>
+        <li>Appointment Reminder</li>
+        <li>Appointment Cancellation</li>
+        <li>Appointment Rescheduled</li>
+        <li>Payment Receipt</li>
+        <li>Welcome Email</li>
+        <li>Follow-Up Email</li>
+        <li>Admin Notification</li>
+    </ul>
+
+    <h3>Personalization Tags</h3>
+    <p>Insert dynamic content using these tags:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Tag</th>
+                <th>Inserts</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><code>{{customer_first_name}}</code></td><td>Customer's first name</td></tr>
+            <tr><td><code>{{customer_name}}</code></td><td>Full name</td></tr>
+            <tr><td><code>{{service_name}}</code></td><td>Service booked</td></tr>
+            <tr><td><code>{{appointment_date}}</code></td><td>Formatted date</td></tr>
+            <tr><td><code>{{appointment_time}}</code></td><td>Formatted time</td></tr>
+            <tr><td><code>{{provider_name}}</code></td><td>Provider's name</td></tr>
+            <tr><td><code>{{company_name}}</code></td><td>Your business name</td></tr>
+        </tbody>
+    </table>
+
+    <div class="info-box tip">
+        <div class="info-box-title">💡 Quick Copy</div>
+        Click any tag in the sidebar to instantly copy it to your clipboard!
+    </div>
+
+    <h3>Composing Emails</h3>
+    <ol class="steps">
+        <li>Go to <strong>Communications → Compose</strong></li>
+        <li>Select recipient (customer or manual entry)</li>
+        <li>Choose email template</li>
+        <li>Add custom message (optional)</li>
+        <li>Click <strong>Preview</strong> to review</li>
+        <li>Click <strong>Send Email</strong></li>
+    </ol>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="section">
+    <h2>9. Settings</h2>
+
+    <p>Access via <strong>GuidePost → Settings</strong></p>
+
+    <h3>Business Information</h3>
+    <ul>
+        <li><strong>Business Name</strong> – Displayed in emails and bookings</li>
+        <li><strong>Admin Email</strong> – Receives notifications</li>
+        <li><strong>Timezone</strong> – Your business timezone</li>
+    </ul>
+
+    <h3>Booking Settings</h3>
+    <ul>
+        <li><strong>Booking Window</strong> – How far ahead customers can book</li>
+        <li><strong>Minimum Notice</strong> – Required advance notice for bookings</li>
+        <li><strong>Cancellation Policy</strong> – Hours before appointment for free cancellation</li>
+    </ul>
+
+    <h3>SMTP Settings</h3>
+    <p>For reliable email delivery, configure your email provider's SMTP settings. Use the quick presets for Gmail, Outlook, or other common providers.</p>
+</section>
+
+<!-- TROUBLESHOOTING -->
+<section id="troubleshooting" class="section">
+    <h2>10. Troubleshooting</h2>
+
+    <h3>Common Issues</h3>
+
+    <h4>Buttons Not Working</h4>
+    <ol>
+        <li>Clear your browser cache</li>
+        <li>Refresh the page</li>
+        <li>Check browser console for JavaScript errors</li>
+        <li>Ensure no plugin conflicts exist</li>
+    </ol>
+
+    <h4>Emails Not Sending</h4>
+    <ol>
+        <li>Check SMTP settings are correct</li>
+        <li>Use the "Send Test Email" feature</li>
+        <li>Check spam/junk folders</li>
+        <li>Review email logs for error messages</li>
+    </ol>
+
+    <h4>Calendar Not Loading</h4>
+    <ol>
+        <li>Ensure JavaScript is enabled</li>
+        <li>Check for browser extensions blocking scripts</li>
+        <li>Try a different browser</li>
+        <li>Clear browser cache</li>
+    </ol>
+
+    <div class="info-box warning">
+        <div class="info-box-title">⚠️ Need More Help?</div>
+        Check the documentation, review WordPress error logs, or contact your administrator.
+    </div>
+</section>
+
+<!-- QUICK REFERENCE -->
+<section id="quick-reference" class="section">
+    <h2>Quick Reference</h2>
+
+    <h3>Status Color Codes</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Customer Status</th>
+                <th>Appointment Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="status-badge status-active">Active</span> – Green</td>
+                <td>🟡 Pending – Yellow</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-vip">VIP</span> – Orange</td>
+                <td>🟢 Approved – Green</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-paused">Paused</span> – Yellow</td>
+                <td>🔵 Completed – Blue</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-inactive">Inactive</span> – Gray</td>
+                <td>🔴 Canceled – Red</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-prospect">Prospect</span> – Blue</td>
+                <td>⚫ No Show – Gray</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Keyboard Shortcuts</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><code>Escape</code></td><td>Close modals</td></tr>
+            <tr><td><code>Enter</code></td><td>Submit forms (when focused)</td></tr>
+        </tbody>
+    </table>
+</section>
+
+<!-- FOOTER -->
+<footer class="guide-footer">
+    <div class="company">PrometheanLink LLC</div>
+    <div class="developer">Developed by Walter Hieber</div>
+    <p style="margin-top: 20px;">
+        GuidePost User Guide v1.0.0<br>
+        © 2025 PrometheanLink LLC. All rights reserved.
+    </p>
+</footer>
+
+</body>
+</html>
