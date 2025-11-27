@@ -342,7 +342,7 @@ class GuidePost_Admin {
                  FROM {$tables['customer_flags']} f
                  LEFT JOIN {$tables['customers']} c ON f.customer_id = c.id
                  WHERE f.is_active = 1
-                 ORDER BY FIELD(f.priority, 'high', 'medium', 'low'), f.created_at DESC
+                 ORDER BY FIELD(f.flag_type, 'payment_due', 'follow_up', 'inactive', 'vip_check', 'birthday', 'custom'), f.created_at DESC
                  LIMIT 10"
             );
         }
