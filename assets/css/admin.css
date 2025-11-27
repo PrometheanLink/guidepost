@@ -1491,55 +1491,68 @@
     color: var(--gp-text-light);
 }
 
-/* Status Tabs */
-.guidepost-customers-filters {
-    margin-bottom: 20px;
-}
-
-.guidepost-status-tabs {
+/* Row Action Buttons */
+.guidepost-customers-page .row-actions-buttons {
     display: flex;
     gap: 5px;
     flex-wrap: wrap;
-    margin-bottom: 15px;
 }
 
-.guidepost-status-tabs a {
-    padding: 6px 12px;
-    text-decoration: none;
-    color: var(--gp-text-light);
-    border-radius: 4px;
-    transition: all 0.2s;
+.guidepost-customers-page .row-actions-buttons .button {
+    padding: 2px 8px;
+    font-size: 12px;
 }
 
-.guidepost-status-tabs a:hover {
-    background: var(--gp-bg-light);
-    color: var(--gp-text);
+.guidepost-customers-page .button-link-delete {
+    color: #b32d2e;
+    border-color: #b32d2e;
 }
 
-.guidepost-status-tabs a.current {
-    background: var(--gp-primary);
+.guidepost-customers-page .button-link-delete:hover {
+    background: #b32d2e;
     color: #fff;
+    border-color: #b32d2e;
 }
 
-.guidepost-status-tabs .count {
-    opacity: 0.8;
-    margin-left: 3px;
+/* Column widths for customers table */
+.guidepost-customers-table .column-customer {
+    width: 22%;
 }
 
-.guidepost-filter-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+.guidepost-customers-table .column-contact {
+    width: 18%;
 }
 
-.guidepost-search-box {
-    display: flex;
-    gap: 8px;
+.guidepost-customers-table .column-status {
+    width: 10%;
 }
 
-.guidepost-search-box input[type="search"] {
-    min-width: 250px;
-    padding: 6px 12px;
+.guidepost-customers-table .column-appointments {
+    width: 10%;
+    text-align: center;
+}
+
+.guidepost-customers-table .column-spent {
+    width: 10%;
+    text-align: right;
+}
+
+.guidepost-customers-table .column-credits {
+    width: 8%;
+    text-align: center;
+}
+
+.guidepost-customers-table .column-last-visit {
+    width: 10%;
+}
+
+.guidepost-customers-table .column-actions {
+    width: 12%;
+}
+
+/* Customers Page - uses WordPress native subsubsub styling */
+.guidepost-customers-page .subsubsub {
+    margin-bottom: 0;
 }
 
 /* Status colors for VIP and Prospect */

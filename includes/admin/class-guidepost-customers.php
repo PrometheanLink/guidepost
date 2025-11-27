@@ -273,43 +273,59 @@ class GuidePost_Customers {
             </a>
         </h1>
 
-        <!-- Filters -->
-        <div class="guidepost-customers-filters">
-            <form method="get" class="guidepost-filter-form">
-                <input type="hidden" name="page" value="guidepost-customers">
-
-                <div class="guidepost-status-tabs">
-                    <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-customers' ), admin_url( 'admin.php' ) ) ); ?>"
-                       class="<?php echo empty( $status ) ? 'current' : ''; ?>">
-                        <?php esc_html_e( 'All', 'guidepost' ); ?>
-                        <span class="count">(<?php echo array_sum( wp_list_pluck( $status_counts, 'count' ) ); ?>)</span>
-                    </a>
-                    <?php
-                    $statuses = array( 'active', 'vip', 'paused', 'inactive', 'prospect' );
-                    foreach ( $statuses as $s ) :
-                        $count = isset( $status_counts[ $s ] ) ? $status_counts[ $s ]->count : 0;
-                        if ( $count > 0 ) :
-                    ?>
-                        <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-customers', 'status' => $s ), admin_url( 'admin.php' ) ) ); ?>"
-                           class="<?php echo $status === $s ? 'current' : ''; ?>">
-                            <?php echo esc_html( ucfirst( $s ) ); ?>
-                            <span class="count">(<?php echo esc_html( $count ); ?>)</span>
-                        </a>
-                    <?php
-                        endif;
-                    endforeach;
-                    ?>
-                </div>
-
-                <div class="guidepost-search-box">
-                    <input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search customers...', 'guidepost' ); ?>">
-                    <button type="submit" class="button"><?php esc_html_e( 'Search', 'guidepost' ); ?></button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Customer List -->
+        <!-- Main Content Area with White Background -->
         <div class="guidepost-admin-content">
+            <!-- Status Tabs & Search Row -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px 0;">
+                <ul class="subsubsub" style="margin: 0; float: none;">
+                    <li>
+                        <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-customers' ), admin_url( 'admin.php' ) ) ); ?>" <?php echo empty( $status ) ? 'class="current"' : ''; ?>>
+                            <?php esc_html_e( 'All', 'guidepost' ); ?>
+                            <span class="count">(<?php echo array_sum( wp_list_pluck( $status_counts, 'count' ) ); ?>)</span>
+                        </a> |
+                    </li>
+                    <?php
+                    $statuses = array(
+                        'active'   => __( 'Active', 'guidepost' ),
+                        'vip'      => __( 'VIP', 'guidepost' ),
+                        'paused'   => __( 'Paused', 'guidepost' ),
+                        'inactive' => __( 'Inactive', 'guidepost' ),
+                        'prospect' => __( 'Prospect', 'guidepost' ),
+                    );
+                    $visible_statuses = array();
+                    foreach ( $statuses as $s => $label ) {
+                        $count = isset( $status_counts[ $s ] ) ? $status_counts[ $s ]->count : 0;
+                        if ( $count > 0 ) {
+                            $visible_statuses[ $s ] = array( 'label' => $label, 'count' => $count );
+                        }
+                    }
+                    $i = 0;
+                    $total = count( $visible_statuses );
+                    foreach ( $visible_statuses as $s => $data ) :
+                        $i++;
+                    ?>
+                    <li>
+                        <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'guidepost-customers', 'status' => $s ), admin_url( 'admin.php' ) ) ); ?>" <?php echo $status === $s ? 'class="current"' : ''; ?>>
+                            <?php echo esc_html( $data['label'] ); ?>
+                            <span class="count">(<?php echo esc_html( $data['count'] ); ?>)</span>
+                        </a><?php echo $i < $total ? ' |' : ''; ?>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+
+                <!-- Search Box -->
+                <form method="get" class="search-box" style="margin: 0;">
+                    <input type="hidden" name="page" value="guidepost-customers">
+                    <?php if ( $status ) : ?>
+                        <input type="hidden" name="status" value="<?php echo esc_attr( $status ); ?>">
+                    <?php endif; ?>
+                    <label class="screen-reader-text" for="customer-search-input"><?php esc_html_e( 'Search Customers', 'guidepost' ); ?></label>
+                    <input type="search" id="customer-search-input" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search customers...', 'guidepost' ); ?>">
+                    <input type="submit" id="search-submit" class="button" value="<?php esc_attr_e( 'Search', 'guidepost' ); ?>">
+                </form>
+            </div>
+
+            <!-- Customer List -->
             <?php if ( empty( $customers ) ) : ?>
                 <p><?php esc_html_e( 'No customers found.', 'guidepost' ); ?></p>
             <?php else : ?>
@@ -335,6 +351,19 @@ class GuidePost_Customers {
                                 'action'      => 'view',
                                 'customer_id' => $customer->id,
                             ), admin_url( 'admin.php' ) );
+                            $edit_url = add_query_arg( array(
+                                'page'        => 'guidepost-customers',
+                                'action'      => 'edit',
+                                'customer_id' => $customer->id,
+                            ), admin_url( 'admin.php' ) );
+                            $delete_url = wp_nonce_url(
+                                add_query_arg( array(
+                                    'page'        => 'guidepost-customers',
+                                    'action'      => 'delete',
+                                    'customer_id' => $customer->id,
+                                ), admin_url( 'admin.php' ) ),
+                                'delete_customer_' . $customer->id
+                            );
                             $flags = $this->get_customer_flags( $customer->id, true );
                             ?>
                             <tr>
@@ -392,9 +421,17 @@ class GuidePost_Customers {
                                     ?>
                                 </td>
                                 <td class="column-actions">
-                                    <a href="<?php echo esc_url( $view_url ); ?>" class="button button-small">
-                                        <?php esc_html_e( 'View', 'guidepost' ); ?>
-                                    </a>
+                                    <div class="row-actions-buttons">
+                                        <a href="<?php echo esc_url( $view_url ); ?>" class="button button-small" title="<?php esc_attr_e( 'View customer details', 'guidepost' ); ?>">
+                                            <?php esc_html_e( 'View', 'guidepost' ); ?>
+                                        </a>
+                                        <a href="<?php echo esc_url( $edit_url ); ?>" class="button button-small" title="<?php esc_attr_e( 'Edit customer', 'guidepost' ); ?>">
+                                            <?php esc_html_e( 'Edit', 'guidepost' ); ?>
+                                        </a>
+                                        <a href="<?php echo esc_url( $delete_url ); ?>" class="button button-small button-link-delete" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this customer? This action cannot be undone.', 'guidepost' ); ?>');" title="<?php esc_attr_e( 'Delete customer', 'guidepost' ); ?>">
+                                            <?php esc_html_e( 'Delete', 'guidepost' ); ?>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
