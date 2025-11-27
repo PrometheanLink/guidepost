@@ -61,6 +61,7 @@ class GuidePost_Sample_Data {
                 'customer_documents' => $wpdb->prefix . 'guidepost_customer_documents',
                 'customer_flags'     => $wpdb->prefix . 'guidepost_customer_flags',
                 'credit_history'     => $wpdb->prefix . 'guidepost_credit_history',
+                'notifications'      => $wpdb->prefix . 'guidepost_notifications',
             );
         }
     }
@@ -109,6 +110,10 @@ class GuidePost_Sample_Data {
         // Create credit history
         $credits = $this->create_credit_history( $customers );
         echo "Created " . count( $credits ) . " credit history entries\n";
+
+        // Create email log entries
+        $emails = $this->create_email_log( $customers, $appointments );
+        echo "Created " . count( $emails ) . " email log entries\n";
 
         echo "\n=== Sample Data Generation Complete ===\n";
         echo "Visit GuidePost > Customers to see the sample data.\n";
@@ -780,10 +785,221 @@ class GuidePost_Sample_Data {
     }
 
     /**
+     * Create sample email log entries
+     */
+    private function create_email_log( $customer_ids, $appointments ) {
+        // Clear existing email log entries
+        $this->db->query( "DELETE FROM {$this->tables['notifications']}" );
+
+        $email_ids = array();
+
+        // Fetch customer data from database
+        if ( empty( $customer_ids ) ) {
+            return $email_ids;
+        }
+
+        $customer_ids_str = implode( ',', array_map( 'intval', $customer_ids ) );
+        $customers_data = $this->db->get_results(
+            "SELECT id, first_name, last_name, email FROM {$this->tables['customers']} WHERE id IN ({$customer_ids_str})",
+            ARRAY_A
+        );
+
+        // Index customers by their position in the original array
+        $customers = array();
+        foreach ( $customer_ids as $idx => $cid ) {
+            foreach ( $customers_data as $c ) {
+                if ( (int) $c['id'] === (int) $cid ) {
+                    $customers[ $idx ] = array(
+                        'id'    => $c['id'],
+                        'name'  => $c['first_name'] . ' ' . $c['last_name'],
+                        'email' => $c['email'],
+                        'first_name' => $c['first_name'],
+                    );
+                    break;
+                }
+            }
+        }
+
+        // Sample email templates content
+        $email_templates = array(
+            'confirmation' => array(
+                'subject' => 'Your Coaching Session is Confirmed - {{booking_date}}',
+                'body'    => "Hi {{customer_first_name}},\n\nGreat news! Your coaching session has been confirmed.\n\n**Session Details:**\n- Date: {{booking_date}}\n- Time: {{booking_time}}\n- Service: {{service_name}}\n- Duration: {{service_duration}} minutes\n\nPlease arrive a few minutes early to ensure we can make the most of our time together.\n\nIf you need to reschedule, please let me know at least 24 hours in advance.\n\nLooking forward to our session!\n\nWarm regards,\nKim Benedict\nSojourn Coaching",
+            ),
+            'reminder' => array(
+                'subject' => 'Reminder: Your Coaching Session Tomorrow',
+                'body'    => "Hi {{customer_first_name}},\n\nJust a friendly reminder about your upcoming coaching session:\n\n**Tomorrow at {{booking_time}}**\n- Service: {{service_name}}\n\nBefore our session, take a moment to reflect on:\n- What's been working well since we last spoke?\n- What challenges are you currently facing?\n- What would make this session valuable for you?\n\nSee you soon!\n\nBest,\nKim Benedict",
+            ),
+            'follow_up' => array(
+                'subject' => 'How Are You Doing? - Follow Up from Our Session',
+                'body'    => "Hi {{customer_first_name}},\n\nI wanted to check in and see how you're doing since our last coaching session.\n\nRemember, real change happens in the days and weeks between our sessions. How are you progressing with the goals we discussed?\n\nIf you'd like to book another session, you can do so anytime through our booking page.\n\nHere for you,\nKim Benedict\nSojourn Coaching",
+            ),
+            'welcome' => array(
+                'subject' => 'Welcome to Sojourn Coaching!',
+                'body'    => "Hi {{customer_first_name}},\n\nWelcome to Sojourn Coaching! I'm so glad you've decided to invest in yourself.\n\nAs your coach, I'm here to support you on your journey toward greater clarity, purpose, and fulfillment.\n\nHere's what you can expect:\n- A safe, confidential space to explore your goals\n- Practical strategies tailored to your unique situation\n- Accountability and support between sessions\n\nYour first session has been booked. I can't wait to get started!\n\nWith gratitude,\nKim Benedict\nSojourn Coaching",
+            ),
+            'custom' => array(
+                'subject' => 'A Note from Kim',
+                'body'    => "Hi {{customer_first_name}},\n\nI hope this message finds you well. I wanted to reach out personally to let you know that I value you as a client.\n\nIf there's ever anything I can help with, or if you just want to chat about your progress, don't hesitate to reach out.\n\nWishing you a wonderful week!\n\nWarmly,\nKim Benedict",
+            ),
+        );
+
+        $current_time = current_time( 'timestamp' );
+
+        // Create diverse email log entries
+        $email_data = array(
+            // Recent emails (last 7 days)
+            array(
+                'customer_idx'       => 0, // Sarah Mitchell
+                'notification_type'  => 'confirmation',
+                'days_ago'           => 1,
+                'status'             => 'sent',
+                'appointment_idx'    => 0,
+            ),
+            array(
+                'customer_idx'       => 1, // Michael Chen
+                'notification_type'  => 'reminder',
+                'days_ago'           => 2,
+                'status'             => 'sent',
+                'appointment_idx'    => 1,
+            ),
+            array(
+                'customer_idx'       => 2, // Jennifer Rodriguez
+                'notification_type'  => 'welcome',
+                'days_ago'           => 3,
+                'status'             => 'sent',
+                'appointment_idx'    => null,
+            ),
+            array(
+                'customer_idx'       => 5, // Robert Williams
+                'notification_type'  => 'follow_up',
+                'days_ago'           => 4,
+                'status'             => 'sent',
+                'appointment_idx'    => 2,
+            ),
+            array(
+                'customer_idx'       => 4, // Amanda Foster
+                'notification_type'  => 'confirmation',
+                'days_ago'           => 5,
+                'status'             => 'failed',
+                'appointment_idx'    => 3,
+            ),
+            // Older emails (2-4 weeks ago)
+            array(
+                'customer_idx'       => 0, // Sarah Mitchell
+                'notification_type'  => 'welcome',
+                'days_ago'           => 14,
+                'status'             => 'sent',
+                'appointment_idx'    => null,
+            ),
+            array(
+                'customer_idx'       => 1, // Michael Chen
+                'notification_type'  => 'confirmation',
+                'days_ago'           => 21,
+                'status'             => 'sent',
+                'appointment_idx'    => 4,
+            ),
+            array(
+                'customer_idx'       => 3, // David Thompson
+                'notification_type'  => 'custom',
+                'days_ago'           => 10,
+                'status'             => 'sent',
+                'appointment_idx'    => null,
+            ),
+            array(
+                'customer_idx'       => 2, // Jennifer Rodriguez
+                'notification_type'  => 'reminder',
+                'days_ago'           => 7,
+                'status'             => 'sent',
+                'appointment_idx'    => 5,
+            ),
+            array(
+                'customer_idx'       => 5, // Robert Williams
+                'notification_type'  => 'confirmation',
+                'days_ago'           => 28,
+                'status'             => 'sent',
+                'appointment_idx'    => 6,
+            ),
+            // A few more recent ones
+            array(
+                'customer_idx'       => 4, // Amanda Foster
+                'notification_type'  => 'follow_up',
+                'days_ago'           => 0,
+                'status'             => 'sent',
+                'appointment_idx'    => null,
+            ),
+            array(
+                'customer_idx'       => 0, // Sarah Mitchell
+                'notification_type'  => 'reminder',
+                'days_ago'           => 0,
+                'status'             => 'sent',
+                'appointment_idx'    => 7,
+            ),
+        );
+
+        foreach ( $email_data as $data ) {
+            if ( ! isset( $customers[ $data['customer_idx'] ] ) ) {
+                continue;
+            }
+
+            $customer = $customers[ $data['customer_idx'] ];
+            $template = $email_templates[ $data['notification_type'] ];
+            $sent_date = date( 'Y-m-d H:i:s', $current_time - ( $data['days_ago'] * DAY_IN_SECONDS ) - rand( 0, 43200 ) );
+
+            // Get appointment ID if specified
+            $appointment_id = null;
+            if ( $data['appointment_idx'] !== null && isset( $appointments[ $data['appointment_idx'] ] ) ) {
+                $appointment_id = $appointments[ $data['appointment_idx'] ];
+            }
+
+            // Replace variables in template
+            $first_name = $customer['first_name'];
+
+            $subject = str_replace(
+                array( '{{customer_first_name}}', '{{booking_date}}', '{{booking_time}}', '{{service_name}}', '{{service_duration}}' ),
+                array( $first_name, date( 'l, F j, Y', strtotime( $sent_date ) + DAY_IN_SECONDS ), '10:00 AM', 'Coaching Session', '60' ),
+                $template['subject']
+            );
+
+            $body = str_replace(
+                array( '{{customer_first_name}}', '{{booking_date}}', '{{booking_time}}', '{{service_name}}', '{{service_duration}}' ),
+                array( $first_name, date( 'l, F j, Y', strtotime( $sent_date ) + DAY_IN_SECONDS ), '10:00 AM', 'Coaching Session', '60' ),
+                $template['body']
+            );
+
+            $insert_data = array(
+                'customer_id'        => $customer['id'],
+                'appointment_id'     => $appointment_id,
+                'recipient_email'    => $customer['email'],
+                'recipient_name'     => $customer['name'],
+                'notification_type'  => $data['notification_type'],
+                'subject'            => $subject,
+                'body'               => $body,
+                'status'             => $data['status'],
+                'sent_by'            => 1,
+                'sent_at'            => $data['status'] === 'sent' ? $sent_date : null,
+                'created_at'         => $sent_date,
+            );
+
+            if ( $data['status'] === 'failed' ) {
+                $insert_data['error_message'] = 'SMTP connection failed: Could not connect to mail server';
+            }
+
+            $this->db->insert( $this->tables['notifications'], $insert_data );
+            $email_ids[] = $this->db->insert_id;
+        }
+
+        return $email_ids;
+    }
+
+    /**
      * Clear all sample data
      */
     public function clear() {
         echo "=== Clearing GuidePost Sample Data ===\n\n";
+
+        $this->db->query( "DELETE FROM {$this->tables['notifications']}" );
+        echo "Cleared email log\n";
 
         $this->db->query( "DELETE FROM {$this->tables['credit_history']}" );
         echo "Cleared credit history\n";

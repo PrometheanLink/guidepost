@@ -2958,3 +2958,268 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   Communications Quick Tips Panel
+   ========================================================================== */
+
+.guidepost-tips-panel {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff 100%);
+    border-color: #ffd54f;
+}
+
+.guidepost-tips-panel h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #c16107;
+    margin-bottom: 12px;
+}
+
+.guidepost-tips-panel h3 .dashicons {
+    color: #ffc107;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.guidepost-tips-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.guidepost-tips-list li {
+    position: relative;
+    padding: 8px 0 8px 24px;
+    color: var(--gp-text);
+    font-size: 13px;
+    line-height: 1.5;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.guidepost-tips-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.guidepost-tips-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   Communications Simplified Tags
+   ========================================================================== */
+
+.guidepost-tags-simple {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.guidepost-tag-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.guidepost-tag-item:hover {
+    background: #e9ecef;
+    border-color: var(--gp-primary);
+    transform: translateX(3px);
+}
+
+.guidepost-tag-item code {
+    background: var(--gp-primary);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.guidepost-tag-item span {
+    color: var(--gp-text-light);
+    font-size: 12px;
+    flex: 1;
+}
+
+/* Tag copied feedback */
+.guidepost-tag-item.copied {
+    background: #e8f5e9;
+    border-color: #4caf50;
+}
+
+.guidepost-tag-item.copied code {
+    background: #4caf50;
+}
+
+/* ==========================================================================
+   Communications Email Log Enhancements
+   ========================================================================== */
+
+.guidepost-email-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.guidepost-email-log-table th {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--gp-text);
+    border-bottom: 2px solid var(--gp-border);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.guidepost-email-log-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+    font-size: 13px;
+}
+
+.guidepost-email-log-table tr:hover td {
+    background: #fafafa;
+}
+
+.guidepost-email-log-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Email Log Status Badges */
+.guidepost-email-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.guidepost-email-status.sent {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.guidepost-email-status.sent::before {
+    content: '✓';
+}
+
+.guidepost-email-status.failed {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.guidepost-email-status.failed::before {
+    content: '✕';
+}
+
+.guidepost-email-status.pending {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.guidepost-email-status.pending::before {
+    content: '◷';
+}
+
+/* Email Log Subject and Preview */
+.guidepost-email-subject {
+    font-weight: 600;
+    color: var(--gp-text);
+    margin-bottom: 4px;
+}
+
+.guidepost-email-preview {
+    color: var(--gp-text-light);
+    font-size: 12px;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Email Log Recipient */
+.guidepost-email-recipient {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.guidepost-email-recipient-name {
+    font-weight: 500;
+    color: var(--gp-text);
+}
+
+.guidepost-email-recipient-email {
+    font-size: 12px;
+    color: var(--gp-text-light);
+}
+
+/* Email Log Date */
+.guidepost-email-date {
+    color: var(--gp-text-light);
+    font-size: 12px;
+}
+
+.guidepost-email-date-relative {
+    font-weight: 500;
+    color: var(--gp-text);
+    display: block;
+}
+
+/* Email Log Actions */
+.guidepost-email-log-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.guidepost-email-log-actions .button {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+/* Empty State */
+.guidepost-email-log-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gp-text-light);
+}
+
+.guidepost-email-log-empty .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #ddd;
+    margin-bottom: 15px;
+}
+
+.guidepost-email-log-empty h3 {
+    margin: 0 0 10px;
+    color: var(--gp-text);
+    font-weight: 500;
+}
+
+.guidepost-email-log-empty p {
+    margin: 0;
+    font-size: 13px;
+}

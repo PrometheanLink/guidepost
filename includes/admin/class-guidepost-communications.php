@@ -579,32 +579,61 @@ class GuidePost_Communications {
                 </form>
             </div>
 
-            <!-- Customer Info Sidebar -->
+            <!-- Sidebar -->
             <div class="guidepost-compose-sidebar">
+                <!-- Customer Info Panel (shown when customer selected) -->
                 <div id="customer-info-panel" class="guidepost-info-panel" style="display: none;">
                     <h3><?php esc_html_e( 'Customer Details', 'guidepost' ); ?></h3>
                     <div id="customer-info-content"></div>
                 </div>
 
+                <!-- Quick Tips Panel -->
+                <div class="guidepost-info-panel guidepost-tips-panel">
+                    <h3>
+                        <span class="dashicons dashicons-lightbulb"></span>
+                        <?php esc_html_e( 'Quick Tips', 'guidepost' ); ?>
+                    </h3>
+                    <ul class="guidepost-tips-list">
+                        <li><?php esc_html_e( 'Select a customer to auto-fill their details', 'guidepost' ); ?></li>
+                        <li><?php esc_html_e( 'Templates automatically personalize with customer info', 'guidepost' ); ?></li>
+                        <li><?php esc_html_e( 'Preview before sending to check everything looks right', 'guidepost' ); ?></li>
+                    </ul>
+                </div>
+
+                <!-- Common Personalization Tags -->
                 <div class="guidepost-info-panel">
-                    <h3><?php esc_html_e( 'Available Variables', 'guidepost' ); ?></h3>
-                    <div class="guidepost-variables-list">
-                        <?php
-                        $variables = GuidePost_Email::get_available_variables();
-                        foreach ( $variables as $group => $vars ) :
-                        ?>
-                            <div class="guidepost-variable-group">
-                                <strong><?php echo esc_html( $group ); ?></strong>
-                                <ul>
-                                    <?php foreach ( $vars as $var => $desc ) : ?>
-                                        <li>
-                                            <code><?php echo esc_html( $var ); ?></code>
-                                            <span class="description"><?php echo esc_html( $desc ); ?></span>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endforeach; ?>
+                    <h3>
+                        <span class="dashicons dashicons-tag"></span>
+                        <?php esc_html_e( 'Personalization Tags', 'guidepost' ); ?>
+                    </h3>
+                    <p class="description" style="margin-bottom: 12px;">
+                        <?php esc_html_e( 'Use these tags in your custom message. They\'ll be replaced with actual values.', 'guidepost' ); ?>
+                    </p>
+                    <div class="guidepost-tags-simple">
+                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{customer_first_name}}</code>
+                            <span><?php esc_html_e( 'First name', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{customer_name}}</code>
+                            <span><?php esc_html_e( 'Full name', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{appointment_date}}</code>
+                            <span><?php esc_html_e( 'Appt date', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{appointment_time}}</code>
+                            <span><?php esc_html_e( 'Appt time', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{service_name}}</code>
+                            <span><?php esc_html_e( 'Service', 'guidepost' ); ?></span>
+                        </div>
+                        <div class="guidepost-tag-item" title="<?php esc_attr_e( 'Click to copy', 'guidepost' ); ?>">
+                            <code>{{company_name}}</code>
+                            <span><?php esc_html_e( 'Your business', 'guidepost' ); ?></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -879,48 +908,77 @@ class GuidePost_Communications {
         </div>
 
         <?php if ( empty( $emails ) ) : ?>
-            <p><?php esc_html_e( 'No emails found.', 'guidepost' ); ?></p>
+            <div class="guidepost-email-log-empty">
+                <span class="dashicons dashicons-email-alt"></span>
+                <h3><?php esc_html_e( 'No emails yet', 'guidepost' ); ?></h3>
+                <p><?php esc_html_e( 'When you send emails to customers, they will appear here.', 'guidepost' ); ?></p>
+            </div>
         <?php else : ?>
-            <table class="wp-list-table widefat fixed striped">
+            <table class="guidepost-email-log-table">
                 <thead>
                     <tr>
-                        <th style="width: 180px;"><?php esc_html_e( 'Date', 'guidepost' ); ?></th>
-                        <th><?php esc_html_e( 'Recipient', 'guidepost' ); ?></th>
+                        <th style="width: 160px;"><?php esc_html_e( 'Date', 'guidepost' ); ?></th>
+                        <th style="width: 200px;"><?php esc_html_e( 'Recipient', 'guidepost' ); ?></th>
                         <th><?php esc_html_e( 'Subject', 'guidepost' ); ?></th>
                         <th style="width: 100px;"><?php esc_html_e( 'Type', 'guidepost' ); ?></th>
-                        <th style="width: 80px;"><?php esc_html_e( 'Status', 'guidepost' ); ?></th>
-                        <th style="width: 100px;"><?php esc_html_e( 'Sent By', 'guidepost' ); ?></th>
+                        <th style="width: 90px;"><?php esc_html_e( 'Status', 'guidepost' ); ?></th>
                         <th style="width: 80px;"><?php esc_html_e( 'Actions', 'guidepost' ); ?></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ( $emails as $email ) : ?>
+                    <?php foreach ( $emails as $email ) :
+                        // Calculate relative time
+                        $timestamp = strtotime( $email->created_at );
+                        $diff = time() - $timestamp;
+                        if ( $diff < 3600 ) {
+                            $relative = sprintf( __( '%d min ago', 'guidepost' ), floor( $diff / 60 ) );
+                        } elseif ( $diff < 86400 ) {
+                            $relative = sprintf( __( '%d hours ago', 'guidepost' ), floor( $diff / 3600 ) );
+                        } elseif ( $diff < 172800 ) {
+                            $relative = __( 'Yesterday', 'guidepost' );
+                        } elseif ( $diff < 604800 ) {
+                            $relative = sprintf( __( '%d days ago', 'guidepost' ), floor( $diff / 86400 ) );
+                        } else {
+                            $relative = date_i18n( 'M j', $timestamp );
+                        }
+                    ?>
                         <tr>
                             <td>
-                                <?php echo esc_html( date_i18n( 'M j, Y g:i A', strtotime( $email->created_at ) ) ); ?>
+                                <div class="guidepost-email-date">
+                                    <span class="guidepost-email-date-relative"><?php echo esc_html( $relative ); ?></span>
+                                    <?php echo esc_html( date_i18n( 'g:i A', $timestamp ) ); ?>
+                                </div>
                             </td>
                             <td>
-                                <?php if ( $email->customer_first_name ) : ?>
-                                    <strong><?php echo esc_html( $email->customer_first_name . ' ' . $email->customer_last_name ); ?></strong><br>
-                                <?php endif; ?>
-                                <a href="mailto:<?php echo esc_attr( $email->recipient_email ); ?>"><?php echo esc_html( $email->recipient_email ); ?></a>
+                                <div class="guidepost-email-recipient">
+                                    <?php if ( $email->customer_first_name ) : ?>
+                                        <span class="guidepost-email-recipient-name"><?php echo esc_html( $email->customer_first_name . ' ' . $email->customer_last_name ); ?></span>
+                                    <?php endif; ?>
+                                    <span class="guidepost-email-recipient-email"><?php echo esc_html( $email->recipient_email ); ?></span>
+                                </div>
                             </td>
-                            <td><?php echo esc_html( $email->subject ); ?></td>
+                            <td>
+                                <div class="guidepost-email-subject"><?php echo esc_html( $email->subject ); ?></div>
+                                <?php if ( $email->body ) : ?>
+                                    <div class="guidepost-email-preview"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $email->body ), 12, '...' ) ); ?></div>
+                                <?php endif; ?>
+                            </td>
                             <td>
                                 <span class="guidepost-template-type guidepost-template-type-<?php echo esc_attr( $email->notification_type ); ?>">
                                     <?php echo esc_html( ucwords( str_replace( '_', ' ', $email->notification_type ) ) ); ?>
                                 </span>
                             </td>
                             <td>
-                                <span class="guidepost-email-status guidepost-email-status-<?php echo esc_attr( $email->status ); ?>">
+                                <span class="guidepost-email-status <?php echo esc_attr( $email->status ); ?>">
                                     <?php echo esc_html( ucfirst( $email->status ) ); ?>
                                 </span>
                             </td>
-                            <td><?php echo esc_html( $email->sent_by_name ?: '-' ); ?></td>
                             <td>
-                                <button type="button" class="button button-small guidepost-view-email" data-email-id="<?php echo esc_attr( $email->id ); ?>">
-                                    <?php esc_html_e( 'View', 'guidepost' ); ?>
-                                </button>
+                                <div class="guidepost-email-log-actions">
+                                    <button type="button" class="button button-small guidepost-view-email" data-email-id="<?php echo esc_attr( $email->id ); ?>">
+                                        <?php esc_html_e( 'View', 'guidepost' ); ?>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
