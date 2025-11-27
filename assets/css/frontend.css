@@ -1,0 +1,625 @@
+/**
+ * GuidePost Frontend Styles
+ * Calendar styling inspired by book-a-clarity-call.html
+ */
+
+/* ==========================================================================
+   CSS Variables
+   ========================================================================== */
+.guidepost-booking {
+    --gp-primary: #c16107;
+    --gp-primary-hover: #a85206;
+    --gp-secondary: #c18f5f;
+    --gp-success: #95c93d;
+    --gp-text: #333;
+    --gp-text-light: #666;
+    --gp-border: #ddd;
+    --gp-bg: #fff;
+    --gp-bg-light: #f8f8f8;
+    --gp-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --gp-radius: 8px;
+    --gp-font-heading: 'Crimson Text', Georgia, serif;
+    --gp-font-body: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ==========================================================================
+   Base Container
+   ========================================================================== */
+.guidepost-booking {
+    font-family: var(--gp-font-body);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--gp-bg);
+    border-radius: var(--gp-radius);
+    box-shadow: var(--gp-shadow);
+    position: relative;
+}
+
+.guidepost-booking * {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Steps
+   ========================================================================== */
+.guidepost-step {
+    display: none;
+}
+
+.guidepost-step.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.guidepost-step-title {
+    font-family: var(--gp-font-heading);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--gp-text);
+    margin: 0 0 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--gp-primary);
+}
+
+/* ==========================================================================
+   Services Grid
+   ========================================================================== */
+.guidepost-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.guidepost-service-card {
+    display: flex;
+    background: var(--gp-bg);
+    border: 1px solid var(--gp-border);
+    border-radius: var(--gp-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.guidepost-service-card:hover {
+    border-color: var(--gp-primary);
+    box-shadow: var(--gp-shadow);
+    transform: translateY(-2px);
+}
+
+.guidepost-service-card.selected {
+    border-color: var(--gp-primary);
+    background: rgba(193, 97, 7, 0.05);
+}
+
+.guidepost-service-color {
+    width: 8px;
+    flex-shrink: 0;
+}
+
+.guidepost-service-info {
+    padding: 1rem;
+    flex: 1;
+}
+
+.guidepost-service-name {
+    font-family: var(--gp-font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gp-text);
+    margin: 0 0 0.5rem;
+}
+
+.guidepost-service-description {
+    font-size: 0.9rem;
+    color: var(--gp-text-light);
+    margin: 0 0 0.75rem;
+}
+
+.guidepost-service-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--gp-text-light);
+}
+
+.guidepost-service-price {
+    font-weight: 600;
+    color: var(--gp-primary);
+}
+
+.guidepost-no-services {
+    text-align: center;
+    padding: 2rem;
+    color: var(--gp-text-light);
+}
+
+/* ==========================================================================
+   Providers Grid
+   ========================================================================== */
+.guidepost-providers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.guidepost-provider-card {
+    padding: 1.5rem;
+    background: var(--gp-bg);
+    border: 1px solid var(--gp-border);
+    border-radius: var(--gp-radius);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.guidepost-provider-card:hover {
+    border-color: var(--gp-primary);
+    box-shadow: var(--gp-shadow);
+}
+
+.guidepost-provider-card.selected {
+    border-color: var(--gp-primary);
+    background: rgba(193, 97, 7, 0.05);
+}
+
+.guidepost-provider-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    object-fit: cover;
+    border: 3px solid var(--gp-border);
+}
+
+.guidepost-provider-name {
+    font-family: var(--gp-font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Calendar - 7 Column Grid Layout
+   ========================================================================== */
+.guidepost-datetime-container {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .guidepost-datetime-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.guidepost-calendar {
+    background: var(--gp-bg);
+    border: 1px solid var(--gp-border);
+    border-radius: var(--gp-radius);
+    padding: 1rem;
+}
+
+.guidepost-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--gp-border);
+}
+
+.guidepost-calendar-month {
+    font-family: var(--gp-font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gp-text);
+}
+
+.guidepost-calendar-nav {
+    background: none;
+    border: 1px solid var(--gp-border);
+    border-radius: 4px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.guidepost-calendar-nav:hover {
+    border-color: var(--gp-primary);
+    color: var(--gp-primary);
+}
+
+.guidepost-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.guidepost-calendar-weekdays span {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--gp-text-light);
+    padding: 0.5rem 0;
+}
+
+.guidepost-calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.guidepost-calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--gp-bg);
+    border: 1px solid transparent;
+}
+
+.guidepost-calendar-day:hover:not(.disabled):not(.empty) {
+    border-color: var(--gp-primary);
+    background: rgba(193, 97, 7, 0.1);
+}
+
+.guidepost-calendar-day.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.guidepost-calendar-day.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+    background: var(--gp-bg-light);
+}
+
+.guidepost-calendar-day.today {
+    font-weight: 700;
+    border-color: var(--gp-secondary);
+}
+
+.guidepost-calendar-day.selected {
+    background: var(--gp-primary);
+    color: #fff;
+    font-weight: 600;
+}
+
+.guidepost-calendar-day.has-availability {
+    position: relative;
+}
+
+.guidepost-calendar-day.has-availability::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gp-success);
+}
+
+/* ==========================================================================
+   Time Slots
+   ========================================================================== */
+.guidepost-time-slots {
+    background: var(--gp-bg-light);
+    border-radius: var(--gp-radius);
+    padding: 1rem;
+}
+
+.guidepost-time-slots h4 {
+    font-family: var(--gp-font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+    color: var(--gp-text);
+}
+
+.guidepost-slots-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.guidepost-select-date-msg {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--gp-text-light);
+    font-style: italic;
+}
+
+.guidepost-time-slot {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: var(--gp-bg);
+    border: 1px solid var(--gp-border);
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.guidepost-time-slot:hover {
+    border-color: var(--gp-primary);
+    background: rgba(193, 97, 7, 0.05);
+}
+
+.guidepost-time-slot.selected {
+    background: var(--gp-primary);
+    color: #fff;
+    border-color: var(--gp-primary);
+}
+
+.guidepost-no-slots {
+    text-align: center;
+    padding: 1rem;
+    color: var(--gp-text-light);
+}
+
+/* ==========================================================================
+   Customer Form
+   ========================================================================== */
+.guidepost-customer-form {
+    margin-bottom: 1.5rem;
+}
+
+.guidepost-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 600px) {
+    .guidepost-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.guidepost-form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.guidepost-form-field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gp-text);
+    margin-bottom: 0.5rem;
+}
+
+.guidepost-form-field input,
+.guidepost-form-field textarea {
+    padding: 0.75rem;
+    border: 1px solid var(--gp-border);
+    border-radius: 4px;
+    font-family: var(--gp-font-body);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.guidepost-form-field input:focus,
+.guidepost-form-field textarea:focus {
+    outline: none;
+    border-color: var(--gp-primary);
+}
+
+.guidepost-form-field textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ==========================================================================
+   Booking Summary
+   ========================================================================== */
+.guidepost-booking-summary {
+    background: var(--gp-bg-light);
+    border-radius: var(--gp-radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.guidepost-booking-summary h4 {
+    font-family: var(--gp-font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    color: var(--gp-text);
+}
+
+.guidepost-summary-details {
+    font-size: 0.95rem;
+}
+
+.guidepost-summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--gp-border);
+}
+
+.guidepost-summary-row:last-child {
+    border-bottom: none;
+}
+
+.guidepost-summary-label {
+    color: var(--gp-text-light);
+}
+
+.guidepost-summary-value {
+    font-weight: 600;
+    color: var(--gp-text);
+}
+
+.guidepost-summary-total {
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 2px solid var(--gp-border);
+    font-size: 1.1rem;
+}
+
+.guidepost-summary-total .guidepost-summary-value {
+    color: var(--gp-primary);
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.guidepost-step-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.guidepost-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-family: var(--gp-font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.guidepost-btn-primary {
+    background: var(--gp-primary);
+    color: #fff;
+}
+
+.guidepost-btn-primary:hover {
+    background: var(--gp-primary-hover);
+}
+
+.guidepost-btn-back {
+    background: var(--gp-bg);
+    border: 1px solid var(--gp-border);
+    color: var(--gp-text);
+}
+
+.guidepost-btn-back:hover {
+    border-color: var(--gp-text-light);
+}
+
+/* ==========================================================================
+   Confirmation
+   ========================================================================== */
+.guidepost-step-confirmation {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.guidepost-confirmation-icon {
+    margin-bottom: 1rem;
+}
+
+.guidepost-confirmation-icon .dashicons {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: var(--gp-success);
+}
+
+.guidepost-confirmation-message {
+    font-size: 1.1rem;
+    color: var(--gp-text-light);
+    margin-bottom: 1.5rem;
+}
+
+.guidepost-confirmation-details {
+    background: var(--gp-bg-light);
+    border-radius: var(--gp-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ==========================================================================
+   Loading State
+   ========================================================================== */
+.guidepost-loading {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    border-radius: var(--gp-radius);
+}
+
+.guidepost-booking.loading .guidepost-loading {
+    display: flex;
+}
+
+.guidepost-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--gp-border);
+    border-top-color: var(--gp-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================================================================
+   Services List (Standalone Shortcode)
+   ========================================================================== */
+.guidepost-services-list {
+    display: grid;
+    grid-template-columns: repeat(var(--columns, 3), 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .guidepost-services-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .guidepost-services-list {
+        grid-template-columns: 1fr;
+    }
+}
