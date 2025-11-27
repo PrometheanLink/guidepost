@@ -589,13 +589,13 @@
          * Bind events
          */
         bindEvents: function() {
-            // Notes
-            $(document).on('submit', '#guidepost-note-form', this.addNote.bind(this));
+            // Notes - button click handler
+            $(document).on('click', '#add-note-btn', this.addNote.bind(this));
             $(document).on('click', '.guidepost-note-pin', this.pinNote.bind(this));
             $(document).on('click', '.guidepost-note-delete', this.deleteNote.bind(this));
 
             // Flags
-            $(document).on('click', '.guidepost-flag-dismiss', this.dismissFlag.bind(this));
+            $(document).on('click', '.dismiss-flag-btn', this.dismissFlag.bind(this));
             $(document).on('click', '#add-flag-btn', this.showAddFlagModal.bind(this));
             $(document).on('submit', '#guidepost-add-flag-form', this.addFlag.bind(this));
 
@@ -604,7 +604,8 @@
             $(document).on('submit', '#guidepost-credits-form', this.adjustCredits.bind(this));
 
             // Status
-            $(document).on('change', '#customer-status-select', this.updateStatus.bind(this));
+            $(document).on('click', '#change-status-btn', this.showStatusModal.bind(this));
+            $(document).on('submit', '#guidepost-status-form', this.updateStatus.bind(this));
 
             // Modals
             $(document).on('click', '.guidepost-modal-close', this.closeModal.bind(this));
@@ -615,7 +616,7 @@
             });
 
             // ICS Export
-            $(document).on('click', '.guidepost-ics-export', this.exportICS.bind(this));
+            $(document).on('click', '#export-appointments-ics', this.exportICS.bind(this));
 
             // Quick Search
             $(document).on('keyup', '#customer-search', this.debounce(this.searchCustomers.bind(this), 300));
@@ -627,22 +628,27 @@
         addNote: function(e) {
             e.preventDefault();
 
-            const $form = $(e.target);
-            const $btn = $form.find('button[type="submit"]');
+            const $btn = $(e.currentTarget);
+            const customerId = $btn.data('customer-id');
+            const $textarea = $('#new-note-text');
+            const $noteType = $('#new-note-type');
+            const noteText = $textarea.val();
+            const noteType = $noteType.val();
             const originalText = $btn.html();
 
-            const data = {
-                action: 'guidepost_add_note',
-                nonce: guidepost_admin.nonce,
-                customer_id: $form.find('[name="customer_id"]').val(),
-                note: $form.find('[name="note"]').val(),
-                is_pinned: $form.find('[name="is_pinned"]').is(':checked') ? 1 : 0
-            };
-
-            if (!data.note.trim()) {
+            if (!noteText.trim()) {
                 alert('Please enter a note.');
+                $textarea.focus();
                 return;
             }
+
+            const data = {
+                action: 'guidepost_add_customer_note',
+                nonce: guidepost_admin.nonce,
+                customer_id: customerId,
+                note_text: noteText,
+                note_type: noteType
+            };
 
             $btn.html('<span class="dashicons dashicons-update spin"></span> Saving...').prop('disabled', true);
 
@@ -785,17 +791,16 @@
             const $btn = $form.find('button[type="submit"]');
 
             const data = {
-                action: 'guidepost_add_flag',
+                action: 'guidepost_add_customer_flag',
                 nonce: guidepost_admin.nonce,
                 customer_id: $form.find('[name="customer_id"]').val(),
                 flag_type: $form.find('[name="flag_type"]').val(),
-                title: $form.find('[name="title"]').val(),
-                description: $form.find('[name="description"]').val(),
-                priority: $form.find('[name="priority"]').val()
+                message: $form.find('[name="message"]').val(),
+                trigger_date: $form.find('[name="trigger_date"]').val()
             };
 
-            if (!data.title.trim()) {
-                alert('Please enter a flag title.');
+            if (!data.message.trim()) {
+                alert('Please enter a flag message.');
                 return;
             }
 
@@ -825,6 +830,13 @@
          */
         showCreditsModal: function() {
             $('#credits-modal').show();
+        },
+
+        /**
+         * Show status modal
+         */
+        showStatusModal: function() {
+            $('#status-modal').show();
         },
 
         /**
@@ -879,37 +891,35 @@
          * Update status
          */
         updateStatus: function(e) {
-            const $select = $(e.target);
-            const customerId = $select.data('customer-id');
-            const newStatus = $select.val();
-            const originalValue = $select.data('original');
+            e.preventDefault();
+
+            const $form = $(e.target);
+            const $btn = $form.find('button[type="submit"]');
+            const customerId = $form.find('[name="customer_id"]').val();
+            const newStatus = $form.find('[name="status"]').val();
+
+            $btn.prop('disabled', true);
 
             $.ajax({
                 url: guidepost_admin.ajax_url,
                 method: 'POST',
                 data: {
-                    action: 'guidepost_update_status',
+                    action: 'guidepost_update_customer_status',
                     nonce: guidepost_admin.nonce,
                     customer_id: customerId,
                     status: newStatus
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Update the status badge
-                        const $badge = $('.guidepost-customer-status');
-                        $badge.removeClass('guidepost-customer-status-' + originalValue)
-                              .addClass('guidepost-customer-status-' + newStatus)
-                              .text(newStatus.charAt(0).toUpperCase() + newStatus.slice(1));
-
-                        $select.data('original', newStatus);
+                        window.location.reload();
                     } else {
                         alert(response.data.message || 'Failed to update status');
-                        $select.val(originalValue);
+                        $btn.prop('disabled', false);
                     }
                 },
                 error: function() {
                     alert('Failed to update status');
-                    $select.val(originalValue);
+                    $btn.prop('disabled', false);
                 }
             });
         },

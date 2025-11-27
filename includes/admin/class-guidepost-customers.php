@@ -616,6 +616,129 @@ class GuidePost_Customers {
                 <?php $this->render_sidebar( $customer ); ?>
             </div>
         </div>
+
+        <!-- Add Flag Modal -->
+        <div id="add-flag-modal" class="guidepost-modal" style="display: none;">
+            <div class="guidepost-modal-content">
+                <div class="guidepost-modal-header">
+                    <h2><?php esc_html_e( 'Add Flag', 'guidepost' ); ?></h2>
+                    <button type="button" class="guidepost-modal-close">&times;</button>
+                </div>
+                <div class="guidepost-modal-body">
+                    <form id="guidepost-add-flag-form">
+                        <input type="hidden" name="customer_id" value="<?php echo esc_attr( $customer->id ); ?>">
+
+                        <div class="guidepost-form-row">
+                            <label for="flag_type"><?php esc_html_e( 'Flag Type', 'guidepost' ); ?></label>
+                            <select name="flag_type" id="flag_type" required>
+                                <option value="follow_up"><?php esc_html_e( 'Follow Up', 'guidepost' ); ?></option>
+                                <option value="payment_due"><?php esc_html_e( 'Payment Due', 'guidepost' ); ?></option>
+                                <option value="inactive"><?php esc_html_e( 'Inactive', 'guidepost' ); ?></option>
+                                <option value="vip_check"><?php esc_html_e( 'VIP Check-in', 'guidepost' ); ?></option>
+                                <option value="birthday"><?php esc_html_e( 'Birthday', 'guidepost' ); ?></option>
+                                <option value="custom"><?php esc_html_e( 'Custom', 'guidepost' ); ?></option>
+                            </select>
+                        </div>
+
+                        <div class="guidepost-form-row">
+                            <label for="flag_message"><?php esc_html_e( 'Message', 'guidepost' ); ?></label>
+                            <input type="text" name="message" id="flag_message" required placeholder="<?php esc_attr_e( 'Enter flag message...', 'guidepost' ); ?>">
+                        </div>
+
+                        <div class="guidepost-form-row">
+                            <label for="flag_trigger_date"><?php esc_html_e( 'Trigger Date (optional)', 'guidepost' ); ?></label>
+                            <input type="date" name="trigger_date" id="flag_trigger_date">
+                        </div>
+
+                        <div class="guidepost-modal-footer">
+                            <button type="button" class="button guidepost-modal-close"><?php esc_html_e( 'Cancel', 'guidepost' ); ?></button>
+                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Add Flag', 'guidepost' ); ?></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credits Modal -->
+        <div id="credits-modal" class="guidepost-modal" style="display: none;">
+            <div class="guidepost-modal-content">
+                <div class="guidepost-modal-header">
+                    <h2><?php esc_html_e( 'Adjust Credits', 'guidepost' ); ?></h2>
+                    <button type="button" class="guidepost-modal-close">&times;</button>
+                </div>
+                <div class="guidepost-modal-body">
+                    <form id="guidepost-credits-form">
+                        <input type="hidden" name="customer_id" value="<?php echo esc_attr( $customer->id ); ?>">
+
+                        <div class="guidepost-form-row">
+                            <label><?php esc_html_e( 'Action', 'guidepost' ); ?></label>
+                            <div class="guidepost-radio-group">
+                                <label>
+                                    <input type="radio" name="credit_type" value="add" checked>
+                                    <?php esc_html_e( 'Add Credits', 'guidepost' ); ?>
+                                </label>
+                                <label>
+                                    <input type="radio" name="credit_type" value="subtract">
+                                    <?php esc_html_e( 'Subtract Credits', 'guidepost' ); ?>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="guidepost-form-row">
+                            <label for="credit_amount"><?php esc_html_e( 'Amount', 'guidepost' ); ?></label>
+                            <input type="number" name="amount" id="credit_amount" min="1" value="1" required>
+                        </div>
+
+                        <div class="guidepost-form-row">
+                            <label for="credit_reason"><?php esc_html_e( 'Reason', 'guidepost' ); ?></label>
+                            <input type="text" name="reason" id="credit_reason" placeholder="<?php esc_attr_e( 'e.g., Package purchase, Session used', 'guidepost' ); ?>">
+                        </div>
+
+                        <div class="guidepost-form-row">
+                            <p class="description">
+                                <?php printf( esc_html__( 'Current balance: %d credits', 'guidepost' ), $customer->total_credits ); ?>
+                            </p>
+                        </div>
+
+                        <div class="guidepost-modal-footer">
+                            <button type="button" class="button guidepost-modal-close"><?php esc_html_e( 'Cancel', 'guidepost' ); ?></button>
+                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Update Credits', 'guidepost' ); ?></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Status Modal -->
+        <div id="status-modal" class="guidepost-modal" style="display: none;">
+            <div class="guidepost-modal-content">
+                <div class="guidepost-modal-header">
+                    <h2><?php esc_html_e( 'Change Status', 'guidepost' ); ?></h2>
+                    <button type="button" class="guidepost-modal-close">&times;</button>
+                </div>
+                <div class="guidepost-modal-body">
+                    <form id="guidepost-status-form">
+                        <input type="hidden" name="customer_id" value="<?php echo esc_attr( $customer->id ); ?>">
+
+                        <div class="guidepost-form-row">
+                            <label for="new_status"><?php esc_html_e( 'New Status', 'guidepost' ); ?></label>
+                            <select name="status" id="new_status" required>
+                                <option value="active" <?php selected( $customer->status, 'active' ); ?>><?php esc_html_e( 'Active', 'guidepost' ); ?></option>
+                                <option value="vip" <?php selected( $customer->status, 'vip' ); ?>><?php esc_html_e( 'VIP', 'guidepost' ); ?></option>
+                                <option value="paused" <?php selected( $customer->status, 'paused' ); ?>><?php esc_html_e( 'Paused', 'guidepost' ); ?></option>
+                                <option value="inactive" <?php selected( $customer->status, 'inactive' ); ?>><?php esc_html_e( 'Inactive', 'guidepost' ); ?></option>
+                                <option value="prospect" <?php selected( $customer->status, 'prospect' ); ?>><?php esc_html_e( 'Prospect', 'guidepost' ); ?></option>
+                            </select>
+                        </div>
+
+                        <div class="guidepost-modal-footer">
+                            <button type="button" class="button guidepost-modal-close"><?php esc_html_e( 'Cancel', 'guidepost' ); ?></button>
+                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Update Status', 'guidepost' ); ?></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <?php
     }
 
