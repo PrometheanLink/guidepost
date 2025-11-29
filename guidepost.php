@@ -235,8 +235,9 @@ final class GuidePost {
 
         // Localize script
         wp_localize_script( 'guidepost-admin', 'guidepost_admin', array(
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( 'guidepost_admin_nonce' ),
+            'ajax_url'  => admin_url( 'admin-ajax.php' ),
+            'admin_url' => admin_url(),
+            'nonce'     => wp_create_nonce( 'guidepost_admin_nonce' ),
         ) );
     }
 }

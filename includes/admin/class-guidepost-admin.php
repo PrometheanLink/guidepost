@@ -79,6 +79,20 @@ class GuidePost_Admin {
                 $this->handle_provider_delete( absint( $_GET['provider_id'] ) );
             }
         }
+
+        // Handle appointment update
+        if ( isset( $_POST['guidepost_update_appointment_nonce'] ) &&
+             wp_verify_nonce( $_POST['guidepost_update_appointment_nonce'], 'guidepost_update_appointment' ) ) {
+            $this->handle_update_appointment();
+        }
+
+        // Handle appointment deletion
+        if ( isset( $_GET['action'] ) && 'delete_appointment' === $_GET['action'] &&
+             isset( $_GET['id'] ) && isset( $_GET['_wpnonce'] ) ) {
+            if ( wp_verify_nonce( $_GET['_wpnonce'], 'delete_appointment_' . $_GET['id'] ) ) {
+                $this->handle_delete_appointment( absint( $_GET['id'] ) );
+            }
+        }
     }
 
     /**
@@ -187,6 +201,132 @@ class GuidePost_Admin {
         } else {
             wp_redirect( add_query_arg( array( 'page' => 'guidepost-providers', 'message' => 'deleted' ), admin_url( 'admin.php' ) ) );
         }
+        exit;
+    }
+
+    /**
+     * Handle appointment update form submission
+     */
+    private function handle_update_appointment() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Permission denied.', 'guidepost' ) );
+        }
+
+        global $wpdb;
+        $tables = GuidePost_Database::get_table_names();
+
+        $appointment_id = isset( $_POST['appointment_id'] ) ? absint( $_POST['appointment_id'] ) : 0;
+
+        if ( ! $appointment_id ) {
+            wp_redirect( add_query_arg( array(
+                'page' => 'guidepost-appointments',
+                'error' => urlencode( __( 'Invalid appointment ID.', 'guidepost' ) )
+            ), admin_url( 'admin.php' ) ) );
+            exit;
+        }
+
+        // Get service duration for end_time calculation
+        $service_id = isset( $_POST['service_id'] ) ? absint( $_POST['service_id'] ) : 0;
+        $service = $wpdb->get_row( $wpdb->prepare(
+            "SELECT duration FROM {$tables['services']} WHERE id = %d",
+            $service_id
+        ) );
+
+        $booking_time = isset( $_POST['booking_time'] ) ? sanitize_text_field( $_POST['booking_time'] ) : '09:00';
+        $duration = $service ? $service->duration : 60;
+        $end_time = date( 'H:i:s', strtotime( $booking_time ) + ( $duration * 60 ) );
+
+        // Prepare data
+        $data = array(
+            'customer_id'      => isset( $_POST['customer_id'] ) ? absint( $_POST['customer_id'] ) : 0,
+            'service_id'       => $service_id,
+            'provider_id'      => isset( $_POST['provider_id'] ) ? absint( $_POST['provider_id'] ) : 0,
+            'booking_date'     => isset( $_POST['booking_date'] ) ? sanitize_text_field( $_POST['booking_date'] ) : '',
+            'booking_time'     => $booking_time,
+            'end_time'         => $end_time,
+            'status'           => isset( $_POST['status'] ) ? sanitize_text_field( $_POST['status'] ) : 'pending',
+            'appointment_mode' => isset( $_POST['appointment_mode'] ) ? sanitize_text_field( $_POST['appointment_mode'] ) : 'in_person',
+            'location'         => isset( $_POST['location'] ) ? sanitize_textarea_field( $_POST['location'] ) : '',
+            'meeting_platform' => isset( $_POST['meeting_platform'] ) ? sanitize_text_field( $_POST['meeting_platform'] ) : '',
+            'meeting_link'     => isset( $_POST['meeting_link'] ) ? esc_url_raw( $_POST['meeting_link'] ) : '',
+            'meeting_password' => isset( $_POST['meeting_password'] ) ? sanitize_text_field( $_POST['meeting_password'] ) : '',
+            'internal_notes'   => isset( $_POST['internal_notes'] ) ? sanitize_textarea_field( $_POST['internal_notes'] ) : '',
+            'admin_notes'      => isset( $_POST['admin_notes'] ) ? sanitize_textarea_field( $_POST['admin_notes'] ) : '',
+            'customer_notes'   => isset( $_POST['customer_notes'] ) ? sanitize_textarea_field( $_POST['customer_notes'] ) : '',
+            'follow_up_date'   => isset( $_POST['follow_up_date'] ) && ! empty( $_POST['follow_up_date'] ) ? sanitize_text_field( $_POST['follow_up_date'] ) : null,
+            'follow_up_notes'  => isset( $_POST['follow_up_notes'] ) ? sanitize_textarea_field( $_POST['follow_up_notes'] ) : '',
+            'credits_used'     => isset( $_POST['credits_used'] ) ? absint( $_POST['credits_used'] ) : 0,
+            'updated_at'       => current_time( 'mysql' ),
+        );
+
+        // Validate required fields
+        if ( empty( $data['customer_id'] ) || empty( $data['service_id'] ) || empty( $data['provider_id'] ) ||
+             empty( $data['booking_date'] ) || empty( $data['booking_time'] ) ) {
+            wp_redirect( add_query_arg( array(
+                'page' => 'guidepost-appointments',
+                'action' => 'edit',
+                'id' => $appointment_id,
+                'error' => urlencode( __( 'Please fill in all required fields.', 'guidepost' ) )
+            ), admin_url( 'admin.php' ) ) );
+            exit;
+        }
+
+        // Update database
+        $result = $wpdb->update(
+            $tables['appointments'],
+            $data,
+            array( 'id' => $appointment_id ),
+            array( '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s' ),
+            array( '%d' )
+        );
+
+        if ( false === $result ) {
+            wp_redirect( add_query_arg( array(
+                'page' => 'guidepost-appointments',
+                'action' => 'edit',
+                'id' => $appointment_id,
+                'error' => urlencode( __( 'Failed to update appointment.', 'guidepost' ) )
+            ), admin_url( 'admin.php' ) ) );
+            exit;
+        }
+
+        // Fire action hook
+        do_action( 'guidepost_appointment_updated', $appointment_id, $data );
+
+        wp_redirect( add_query_arg( array(
+            'page' => 'guidepost-appointments',
+            'message' => 'updated'
+        ), admin_url( 'admin.php' ) ) );
+        exit;
+    }
+
+    /**
+     * Handle appointment deletion
+     *
+     * @param int $appointment_id Appointment ID.
+     */
+    private function handle_delete_appointment( $appointment_id ) {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Permission denied.', 'guidepost' ) );
+        }
+
+        global $wpdb;
+        $tables = GuidePost_Database::get_table_names();
+
+        // Delete the appointment
+        $result = $wpdb->delete(
+            $tables['appointments'],
+            array( 'id' => $appointment_id ),
+            array( '%d' )
+        );
+
+        // Fire action hook
+        do_action( 'guidepost_appointment_deleted', $appointment_id );
+
+        wp_redirect( add_query_arg( array(
+            'page' => 'guidepost-appointments',
+            'message' => 'deleted'
+        ), admin_url( 'admin.php' ) ) );
         exit;
     }
 
@@ -461,6 +601,15 @@ class GuidePost_Admin {
     public function render_appointments_page() {
         global $wpdb;
         $tables = GuidePost_Database::get_table_names();
+
+        // Route to edit form if action=edit
+        $action = isset( $_GET['action'] ) ? sanitize_text_field( $_GET['action'] ) : 'list';
+        $appointment_id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
+
+        if ( 'edit' === $action && $appointment_id > 0 ) {
+            $this->render_appointment_edit_form( $appointment_id );
+            return;
+        }
 
         // Handle status update
         if ( isset( $_POST['appointment_status_nonce'] ) && wp_verify_nonce( $_POST['appointment_status_nonce'], 'update_appointment_status' ) ) {
@@ -738,7 +887,11 @@ class GuidePost_Admin {
                                         </span>
                                     </td>
                                     <td>
-                                        <form method="post" style="display: inline;">
+                                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=guidepost-appointments&action=edit&id=' . $apt->id ) ); ?>"
+                                           class="button button-small" title="<?php esc_attr_e( 'Edit Appointment', 'guidepost' ); ?>">
+                                            <span class="dashicons dashicons-edit" style="vertical-align: middle; font-size: 14px; width: 14px; height: 14px;"></span>
+                                        </a>
+                                        <form method="post" style="display: inline; margin-left: 5px;">
                                             <?php wp_nonce_field( 'update_appointment_status', 'appointment_status_nonce' ); ?>
                                             <input type="hidden" name="appointment_id" value="<?php echo esc_attr( $apt->id ); ?>">
                                             <select name="new_status" onchange="this.form.submit();" style="width: auto;">
@@ -759,6 +912,300 @@ class GuidePost_Admin {
                     </table>
                 <?php endif; ?>
             <?php endif; ?>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render appointment edit form
+     *
+     * @param int $appointment_id Appointment ID.
+     */
+    private function render_appointment_edit_form( $appointment_id ) {
+        global $wpdb;
+        $tables = GuidePost_Database::get_table_names();
+
+        // Fetch appointment with related data
+        $appointment = $wpdb->get_row( $wpdb->prepare(
+            "SELECT a.*,
+                    s.name as service_name, s.duration as service_duration, s.price as service_price,
+                    p.name as provider_name,
+                    c.first_name, c.last_name, c.email as customer_email
+             FROM {$tables['appointments']} a
+             LEFT JOIN {$tables['services']} s ON a.service_id = s.id
+             LEFT JOIN {$tables['providers']} p ON a.provider_id = p.id
+             LEFT JOIN {$tables['customers']} c ON a.customer_id = c.id
+             WHERE a.id = %d",
+            $appointment_id
+        ) );
+
+        if ( ! $appointment ) {
+            echo '<div class="wrap"><div class="notice notice-error"><p>' .
+                 esc_html__( 'Appointment not found.', 'guidepost' ) . '</p></div></div>';
+            return;
+        }
+
+        // Get lookup data
+        $customers = $wpdb->get_results( "SELECT id, first_name, last_name, email FROM {$tables['customers']} ORDER BY last_name, first_name" );
+        $services = $wpdb->get_results( "SELECT id, name, duration, price FROM {$tables['services']} WHERE status = 'active' ORDER BY name" );
+        $providers = $wpdb->get_results( "SELECT id, name FROM {$tables['providers']} WHERE status = 'active' ORDER BY name" );
+
+        // Status options
+        $statuses = array(
+            'pending'   => __( 'Pending', 'guidepost' ),
+            'approved'  => __( 'Approved', 'guidepost' ),
+            'completed' => __( 'Completed', 'guidepost' ),
+            'canceled'  => __( 'Canceled', 'guidepost' ),
+            'no_show'   => __( 'No Show', 'guidepost' ),
+        );
+
+        // Meeting platforms
+        $platforms = array(
+            ''            => __( 'Select Platform', 'guidepost' ),
+            'zoom'        => __( 'Zoom', 'guidepost' ),
+            'google_meet' => __( 'Google Meet', 'guidepost' ),
+            'teams'       => __( 'Microsoft Teams', 'guidepost' ),
+            'other'       => __( 'Other', 'guidepost' ),
+        );
+
+        ?>
+        <div class="wrap guidepost-admin">
+            <p>
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=guidepost-appointments' ) ); ?>" class="button">
+                    <span class="dashicons dashicons-arrow-left-alt" style="vertical-align: middle;"></span>
+                    <?php esc_html_e( 'Back to Appointments', 'guidepost' ); ?>
+                </a>
+            </p>
+
+            <div class="guidepost-page-header">
+                <h1><?php esc_html_e( 'Edit Appointment', 'guidepost' ); ?> #<?php echo esc_html( $appointment_id ); ?></h1>
+                <p class="description">
+                    <?php
+                    printf(
+                        esc_html__( 'Created: %s', 'guidepost' ),
+                        date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $appointment->created_at ) )
+                    );
+                    ?>
+                </p>
+            </div>
+
+            <?php $this->render_admin_notices(); ?>
+
+            <form method="post" class="guidepost-appointment-form">
+                <?php wp_nonce_field( 'guidepost_update_appointment', 'guidepost_update_appointment_nonce' ); ?>
+                <input type="hidden" name="appointment_id" value="<?php echo esc_attr( $appointment_id ); ?>">
+
+                <div class="guidepost-form-columns">
+                    <!-- Left Column -->
+                    <div class="guidepost-form-column">
+
+                        <!-- Scheduling Section -->
+                        <div class="guidepost-form-section">
+                            <h3><span class="dashicons dashicons-calendar-alt"></span> <?php esc_html_e( 'Scheduling', 'guidepost' ); ?></h3>
+
+                            <div class="guidepost-form-group">
+                                <label for="customer_id"><?php esc_html_e( 'Customer', 'guidepost' ); ?> <span class="required">*</span></label>
+                                <select name="customer_id" id="customer_id" required>
+                                    <option value=""><?php esc_html_e( 'Select Customer', 'guidepost' ); ?></option>
+                                    <?php foreach ( $customers as $customer ) : ?>
+                                        <option value="<?php echo esc_attr( $customer->id ); ?>" <?php selected( $appointment->customer_id, $customer->id ); ?>>
+                                            <?php echo esc_html( $customer->last_name . ', ' . $customer->first_name . ' (' . $customer->email . ')' ); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="guidepost-form-group">
+                                <label for="booking_date"><?php esc_html_e( 'Date', 'guidepost' ); ?> <span class="required">*</span></label>
+                                <input type="date" name="booking_date" id="booking_date"
+                                       value="<?php echo esc_attr( $appointment->booking_date ?? '' ); ?>" required>
+                            </div>
+
+                            <div class="guidepost-form-group">
+                                <label for="booking_time"><?php esc_html_e( 'Time', 'guidepost' ); ?> <span class="required">*</span></label>
+                                <input type="time" name="booking_time" id="booking_time"
+                                       value="<?php echo esc_attr( substr( $appointment->booking_time, 0, 5 ) ); ?>" required>
+                                <small>
+                                    <?php
+                                    printf(
+                                        esc_html__( 'End time: %s (based on service duration)', 'guidepost' ),
+                                        '<span id="end-time-display">' . esc_html( date( 'g:i A', strtotime( $appointment->end_time ) ) ) . '</span>'
+                                    );
+                                    ?>
+                                </small>
+                            </div>
+
+                            <div id="availability-check"></div>
+                        </div>
+
+                        <!-- Appointment Mode Section -->
+                        <div class="guidepost-form-section">
+                            <h3><span class="dashicons dashicons-location"></span> <?php esc_html_e( 'Appointment Mode', 'guidepost' ); ?></h3>
+
+                            <div class="guidepost-form-group">
+                                <label>
+                                    <input type="radio" name="appointment_mode" value="in_person"
+                                           <?php checked( $appointment->appointment_mode, 'in_person' ); ?>
+                                           <?php checked( empty( $appointment->appointment_mode ), true ); ?>>
+                                    <?php esc_html_e( 'In Person', 'guidepost' ); ?>
+                                </label>
+                                <label style="margin-left: 20px;">
+                                    <input type="radio" name="appointment_mode" value="virtual"
+                                           <?php checked( $appointment->appointment_mode, 'virtual' ); ?>>
+                                    <?php esc_html_e( 'Virtual', 'guidepost' ); ?>
+                                </label>
+                            </div>
+
+                            <!-- In Person Fields -->
+                            <div id="in-person-fields" class="guidepost-conditional-fields"
+                                 style="<?php echo ( 'virtual' === $appointment->appointment_mode ) ? 'display:none;' : ''; ?>">
+                                <div class="guidepost-form-group">
+                                    <label for="location"><?php esc_html_e( 'Location', 'guidepost' ); ?></label>
+                                    <textarea name="location" id="location" rows="2"><?php echo esc_textarea( $appointment->location ?? '' ); ?></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Virtual Fields -->
+                            <div id="virtual-fields" class="guidepost-conditional-fields"
+                                 style="<?php echo ( 'in_person' === $appointment->appointment_mode || empty( $appointment->appointment_mode ) ) ? 'display:none;' : ''; ?>">
+                                <div class="guidepost-form-group">
+                                    <label for="meeting_platform"><?php esc_html_e( 'Platform', 'guidepost' ); ?></label>
+                                    <select name="meeting_platform" id="meeting_platform">
+                                        <?php foreach ( $platforms as $value => $label ) : ?>
+                                            <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $appointment->meeting_platform, $value ); ?>>
+                                                <?php echo esc_html( $label ); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                                <div class="guidepost-form-group">
+                                    <label for="meeting_link"><?php esc_html_e( 'Meeting Link', 'guidepost' ); ?></label>
+                                    <input type="url" name="meeting_link" id="meeting_link"
+                                           value="<?php echo esc_url( $appointment->meeting_link ?? '' ); ?>"
+                                           placeholder="https://...">
+                                </div>
+
+                                <div class="guidepost-form-group">
+                                    <label for="meeting_password"><?php esc_html_e( 'Meeting Password', 'guidepost' ); ?></label>
+                                    <input type="text" name="meeting_password" id="meeting_password"
+                                           value="<?php echo esc_attr( $appointment->meeting_password ?? '' ); ?>">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="guidepost-form-column">
+
+                        <!-- Appointment Info Section -->
+                        <div class="guidepost-form-section">
+                            <h3><span class="dashicons dashicons-info"></span> <?php esc_html_e( 'Appointment Info', 'guidepost' ); ?></h3>
+
+                            <div class="guidepost-form-group">
+                                <label for="status"><?php esc_html_e( 'Status', 'guidepost' ); ?> <span class="required">*</span></label>
+                                <select name="status" id="status" required>
+                                    <?php foreach ( $statuses as $value => $label ) : ?>
+                                        <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $appointment->status, $value ); ?>>
+                                            <?php echo esc_html( $label ); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="guidepost-form-group">
+                                <label for="service_id"><?php esc_html_e( 'Service', 'guidepost' ); ?> <span class="required">*</span></label>
+                                <select name="service_id" id="service_id" required>
+                                    <?php foreach ( $services as $service ) : ?>
+                                        <option value="<?php echo esc_attr( $service->id ); ?>"
+                                                data-duration="<?php echo esc_attr( $service->duration ); ?>"
+                                                data-price="<?php echo esc_attr( $service->price ); ?>"
+                                                <?php selected( $appointment->service_id, $service->id ); ?>>
+                                            <?php echo esc_html( $service->name ); ?>
+                                            (<?php echo esc_html( $service->duration ); ?> min - $<?php echo esc_html( number_format( $service->price, 2 ) ); ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="guidepost-form-group">
+                                <label for="provider_id"><?php esc_html_e( 'Provider', 'guidepost' ); ?> <span class="required">*</span></label>
+                                <select name="provider_id" id="provider_id" required>
+                                    <?php foreach ( $providers as $provider ) : ?>
+                                        <option value="<?php echo esc_attr( $provider->id ); ?>" <?php selected( $appointment->provider_id, $provider->id ); ?>>
+                                            <?php echo esc_html( $provider->name ); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="guidepost-form-group">
+                                <label for="credits_used"><?php esc_html_e( 'Credits Used', 'guidepost' ); ?></label>
+                                <input type="number" name="credits_used" id="credits_used" min="0"
+                                       value="<?php echo esc_attr( $appointment->credits_used ?? 0 ); ?>">
+                            </div>
+                        </div>
+
+                        <!-- Notes Section -->
+                        <div class="guidepost-form-section">
+                            <h3><span class="dashicons dashicons-edit"></span> <?php esc_html_e( 'Notes', 'guidepost' ); ?></h3>
+
+                            <div class="guidepost-form-group">
+                                <label for="internal_notes"><?php esc_html_e( 'Internal Notes', 'guidepost' ); ?></label>
+                                <textarea name="internal_notes" id="internal_notes" rows="3"><?php echo esc_textarea( $appointment->internal_notes ?? '' ); ?></textarea>
+                                <small><?php esc_html_e( 'Only visible to admins', 'guidepost' ); ?></small>
+                            </div>
+
+                            <div class="guidepost-form-group">
+                                <label for="admin_notes"><?php esc_html_e( 'Admin Notes', 'guidepost' ); ?></label>
+                                <textarea name="admin_notes" id="admin_notes" rows="3"><?php echo esc_textarea( $appointment->admin_notes ?? '' ); ?></textarea>
+                            </div>
+
+                            <div class="guidepost-form-group">
+                                <label for="customer_notes"><?php esc_html_e( 'Customer Notes', 'guidepost' ); ?></label>
+                                <textarea name="customer_notes" id="customer_notes" rows="3"><?php echo esc_textarea( $appointment->customer_notes ?? '' ); ?></textarea>
+                                <small><?php esc_html_e( 'May be visible to customer in communications', 'guidepost' ); ?></small>
+                            </div>
+                        </div>
+
+                        <!-- Follow-up Section -->
+                        <div class="guidepost-form-section">
+                            <h3><span class="dashicons dashicons-clock"></span> <?php esc_html_e( 'Follow-up', 'guidepost' ); ?></h3>
+
+                            <div class="guidepost-form-group">
+                                <label for="follow_up_date"><?php esc_html_e( 'Follow-up Date', 'guidepost' ); ?></label>
+                                <input type="date" name="follow_up_date" id="follow_up_date"
+                                       value="<?php echo esc_attr( $appointment->follow_up_date ?? '' ); ?>">
+                            </div>
+
+                            <div class="guidepost-form-group">
+                                <label for="follow_up_notes"><?php esc_html_e( 'Follow-up Notes', 'guidepost' ); ?></label>
+                                <textarea name="follow_up_notes" id="follow_up_notes" rows="2"><?php echo esc_textarea( $appointment->follow_up_notes ?? '' ); ?></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="guidepost-form-actions">
+                    <button type="submit" class="button button-primary button-large">
+                        <span class="dashicons dashicons-saved" style="vertical-align: middle;"></span>
+                        <?php esc_html_e( 'Save Changes', 'guidepost' ); ?>
+                    </button>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=guidepost-appointments' ) ); ?>" class="button button-large">
+                        <?php esc_html_e( 'Cancel', 'guidepost' ); ?>
+                    </a>
+                    <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=guidepost-appointments&action=delete_appointment&id=' . $appointment_id ), 'delete_appointment_' . $appointment_id ) ); ?>"
+                       class="button button-large" style="color: #a00; margin-left: auto;"
+                       onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this appointment? This cannot be undone.', 'guidepost' ); ?>');">
+                        <span class="dashicons dashicons-trash" style="vertical-align: middle;"></span>
+                        <?php esc_html_e( 'Delete', 'guidepost' ); ?>
+                    </a>
+                </div>
+
+            </form>
         </div>
         <?php
     }
@@ -814,7 +1261,7 @@ class GuidePost_Admin {
                     <tbody>
                         <?php foreach ( $services as $service ) : ?>
                             <tr>
-                                <td><span class="guidepost-color-indicator" style="background-color: <?php echo esc_attr( $service->color ); ?>"></span></td>
+                                <td><span class="guidepost-color-indicator" style="background-color: <?php echo esc_attr( $service->color ?? '#c16107' ); ?>"></span></td>
                                 <td>
                                     <strong><?php echo esc_html( $service->name ); ?></strong>
                                     <?php if ( $service->description ) : ?>
@@ -1034,8 +1481,8 @@ class GuidePost_Admin {
                             <?php $services = GuidePost_Providers::get_provider_services( $provider->id ); ?>
                             <tr>
                                 <td><strong><?php echo esc_html( $provider->name ); ?></strong></td>
-                                <td><?php echo esc_html( $provider->email ); ?></td>
-                                <td><?php echo esc_html( $provider->phone ); ?></td>
+                                <td><?php echo esc_html( $provider->email ?? '' ); ?></td>
+                                <td><?php echo esc_html( $provider->phone ?? '' ); ?></td>
                                 <td><?php echo esc_html( count( $services ) ); ?> <?php esc_html_e( 'services', 'guidepost' ); ?></td>
                                 <td><span class="guidepost-status guidepost-status-<?php echo esc_attr( str_replace( '_', '-', $provider->status ) ); ?>"><?php echo esc_html( ucfirst( $provider->status ) ); ?></span></td>
                                 <td>
@@ -1145,7 +1592,7 @@ class GuidePost_Admin {
                                     <label style="display: block; margin-bottom: 8px;">
                                         <input type="checkbox" name="services[]" value="<?php echo esc_attr( $service->id ); ?>"
                                             <?php checked( in_array( $service->id, $provider_services ) ); ?>>
-                                        <span class="guidepost-color-indicator" style="background-color: <?php echo esc_attr( $service->color ); ?>"></span>
+                                        <span class="guidepost-color-indicator" style="background-color: <?php echo esc_attr( $service->color ?? '#c16107' ); ?>"></span>
                                         <?php echo esc_html( $service->name ); ?>
                                         (<?php echo esc_html( $service->duration ); ?> min)
                                     </label>

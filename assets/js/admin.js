@@ -21,6 +21,8 @@
          * Bind events
          */
         bindEvents: function() {
+            const self = this;
+
             // Appointment status change
             $(document).on('change', '.guidepost-status-select', this.updateAppointmentStatus.bind(this));
 
@@ -31,6 +33,38 @@
             $(document).on('click', function(e) {
                 if (!$(e.target).closest('.guidepost-event-popup, .fc-event').length) {
                     $('.guidepost-event-popup').remove();
+                }
+            });
+
+            // Appointment mode toggle (In Person / Virtual)
+            $(document).on('change', 'input[name="appointment_mode"]', function() {
+                const mode = $(this).val();
+                if (mode === 'in_person') {
+                    $('#in-person-fields').show();
+                    $('#virtual-fields').hide();
+                } else {
+                    $('#in-person-fields').hide();
+                    $('#virtual-fields').show();
+                }
+            });
+
+            // Service change - update end time display
+            $(document).on('change', '#service_id', function() {
+                const duration = $(this).find(':selected').data('duration');
+                const bookingTime = $('#booking_time').val();
+                if (duration && bookingTime) {
+                    const endTime = self.calculateEndTime(bookingTime, duration);
+                    $('#end-time-display').text(endTime);
+                }
+            });
+
+            // Time change - update end time display
+            $(document).on('change', '#booking_time', function() {
+                const duration = $('#service_id').find(':selected').data('duration');
+                const bookingTime = $(this).val();
+                if (duration && bookingTime) {
+                    const endTime = self.calculateEndTime(bookingTime, duration);
+                    $('#end-time-display').text(endTime);
                 }
             });
         },
@@ -126,10 +160,15 @@
                 'no_show': 'No Show'
             };
 
+            const editUrl = guidepost_admin.admin_url + 'admin.php?page=guidepost-appointments&action=edit&id=' + event.id;
+
             const popup = $('<div class="guidepost-event-popup">' +
                 '<div class="guidepost-popup-header" style="background-color: ' + (event.backgroundColor || '#c16107') + '">' +
                     '<strong>' + props.service + '</strong>' +
-                    '<span class="guidepost-popup-close">&times;</span>' +
+                    '<div class="guidepost-popup-actions">' +
+                        '<a href="' + editUrl + '" class="guidepost-popup-edit-btn" title="Edit Appointment">Edit</a>' +
+                        '<span class="guidepost-popup-close">&times;</span>' +
+                    '</div>' +
                 '</div>' +
                 '<div class="guidepost-popup-body">' +
                     '<p><strong>Customer:</strong> ' + props.customer + '</p>' +
@@ -204,6 +243,25 @@
                 e.preventDefault();
                 return false;
             }
+        },
+
+        /**
+         * Calculate end time from start time and duration
+         */
+        calculateEndTime: function(startTime, durationMinutes) {
+            const parts = startTime.split(':');
+            const date = new Date();
+            date.setHours(parseInt(parts[0], 10));
+            date.setMinutes(parseInt(parts[1], 10) + parseInt(durationMinutes, 10));
+
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+
+            return hours + ':' + minutes + ' ' + ampm;
         }
     };
 

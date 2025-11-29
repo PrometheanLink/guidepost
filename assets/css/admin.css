@@ -3288,6 +3288,180 @@
 }
 
 /* ==========================================================================
+   Appointment Edit Form
+   ========================================================================== */
+
+.guidepost-appointment-form .guidepost-form-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+.guidepost-appointment-form .guidepost-form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.guidepost-appointment-form .guidepost-form-section {
+    background: #fff;
+    border: 1px solid var(--gp-border);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.guidepost-appointment-form .guidepost-form-section h3 {
+    margin: 0 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gp-border);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gp-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.guidepost-appointment-form .guidepost-form-section h3 .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--gp-primary);
+}
+
+.guidepost-appointment-form .guidepost-form-group {
+    margin-bottom: 15px;
+}
+
+.guidepost-appointment-form .guidepost-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.guidepost-appointment-form .guidepost-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--gp-text);
+}
+
+.guidepost-appointment-form .guidepost-form-group label .required {
+    color: #dc3545;
+}
+
+.guidepost-appointment-form .guidepost-form-group input[type="text"],
+.guidepost-appointment-form .guidepost-form-group input[type="date"],
+.guidepost-appointment-form .guidepost-form-group input[type="time"],
+.guidepost-appointment-form .guidepost-form-group input[type="url"],
+.guidepost-appointment-form .guidepost-form-group input[type="number"],
+.guidepost-appointment-form .guidepost-form-group select,
+.guidepost-appointment-form .guidepost-form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--gp-border);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.guidepost-appointment-form .guidepost-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.guidepost-appointment-form .guidepost-form-group small {
+    display: block;
+    margin-top: 5px;
+    color: var(--gp-text-light);
+    font-size: 12px;
+}
+
+.guidepost-appointment-form .guidepost-conditional-fields {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--gp-border);
+}
+
+.guidepost-appointment-form .guidepost-form-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--gp-border);
+}
+
+/* Calendar Popup Edit Button */
+.guidepost-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.guidepost-popup-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.guidepost-popup-edit-btn {
+    background: rgba(255,255,255,0.2);
+    color: #fff !important;
+    padding: 4px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    font-size: 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.guidepost-popup-edit-btn:hover {
+    background: rgba(255,255,255,0.3);
+    color: #fff !important;
+    text-decoration: none;
+}
+
+/* Availability Check Box */
+#availability-check {
+    margin-top: 15px;
+}
+
+#availability-check .availability-ok {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+#availability-check .availability-warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .guidepost-appointment-form .guidepost-form-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 782px) {
+    .guidepost-appointment-form .guidepost-form-actions {
+        flex-direction: column;
+    }
+
+    .guidepost-appointment-form .guidepost-form-actions .button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .guidepost-appointment-form .guidepost-form-actions .button:last-child {
+        margin-left: 0 !important;
+    }
+}
+
+/* ==========================================================================
    Communications Simplified Tags
    ========================================================================== */
 

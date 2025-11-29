@@ -213,11 +213,11 @@ class GuidePost_Shortcodes {
         $html = '';
         foreach ( $services as $service ) {
             $html .= '<div class="guidepost-service-card" data-service-id="' . esc_attr( $service->id ) . '">';
-            $html .= '<div class="guidepost-service-color" style="background-color: ' . esc_attr( $service->color ) . '"></div>';
+            $html .= '<div class="guidepost-service-color" style="background-color: ' . esc_attr( $service->color ?? '#c16107' ) . '"></div>';
             $html .= '<div class="guidepost-service-info">';
             $html .= '<h4 class="guidepost-service-name">' . esc_html( $service->name ) . '</h4>';
             if ( $show_description && ! empty( $service->description ) ) {
-                $html .= '<p class="guidepost-service-description">' . esc_html( $service->description ) . '</p>';
+                $html .= '<p class="guidepost-service-description">' . esc_html( $service->description ?? '' ) . '</p>';
             }
             $html .= '<div class="guidepost-service-meta">';
             $html .= '<span class="guidepost-service-duration">' . esc_html( $service->duration ) . ' ' . esc_html__( 'min', 'guidepost' ) . '</span>';

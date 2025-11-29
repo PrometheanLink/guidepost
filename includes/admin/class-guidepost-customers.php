@@ -381,7 +381,7 @@ class GuidePost_Customers {
                                                 <?php echo esc_html( $customer->first_name . ' ' . $customer->last_name ); ?>
                                             </a>
                                             <?php if ( $customer->company ) : ?>
-                                                <span class="customer-company"><?php echo esc_html( $customer->company ); ?></span>
+                                                <span class="customer-company"><?php echo esc_html( $customer->company ?? '' ); ?></span>
                                             <?php endif; ?>
                                             <?php if ( count( $flags ) > 0 ) : ?>
                                                 <span class="customer-flag-indicator" title="<?php echo esc_attr( count( $flags ) . ' active flags' ); ?>">
@@ -394,7 +394,7 @@ class GuidePost_Customers {
                                 <td class="column-contact">
                                     <a href="mailto:<?php echo esc_attr( $customer->email ); ?>"><?php echo esc_html( $customer->email ); ?></a>
                                     <?php if ( $customer->phone ) : ?>
-                                        <br><span class="phone"><?php echo esc_html( $customer->phone ); ?></span>
+                                        <br><span class="phone"><?php echo esc_html( $customer->phone ?? '' ); ?></span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="column-status">
@@ -484,9 +484,9 @@ class GuidePost_Customers {
                         <?php if ( $customer->company ) : ?>
                             <span class="meta-item">
                                 <span class="dashicons dashicons-building"></span>
-                                <?php echo esc_html( $customer->company ); ?>
+                                <?php echo esc_html( $customer->company ?? '' ); ?>
                                 <?php if ( $customer->job_title ) : ?>
-                                    — <?php echo esc_html( $customer->job_title ); ?>
+                                    — <?php echo esc_html( $customer->job_title ?? '' ); ?>
                                 <?php endif; ?>
                             </span>
                         <?php endif; ?>
@@ -497,7 +497,7 @@ class GuidePost_Customers {
                         <?php if ( $customer->phone ) : ?>
                             <span class="meta-item">
                                 <span class="dashicons dashicons-phone"></span>
-                                <?php echo esc_html( $customer->phone ); ?>
+                                <?php echo esc_html( $customer->phone ?? '' ); ?>
                             </span>
                         <?php endif; ?>
                     </div>
@@ -1393,7 +1393,7 @@ class GuidePost_Customers {
 
                 <?php if ( $customer->source ) : ?>
                     <dt><?php esc_html_e( 'Source', 'guidepost' ); ?></dt>
-                    <dd><?php echo esc_html( $customer->source ); ?></dd>
+                    <dd><?php echo esc_html( $customer->source ?? '' ); ?></dd>
                 <?php endif; ?>
 
                 <?php if ( $customer->preferred_contact ) : ?>
@@ -1403,7 +1403,7 @@ class GuidePost_Customers {
 
                 <?php if ( $customer->timezone ) : ?>
                     <dt><?php esc_html_e( 'Timezone', 'guidepost' ); ?></dt>
-                    <dd><?php echo esc_html( $customer->timezone ); ?></dd>
+                    <dd><?php echo esc_html( $customer->timezone ?? '' ); ?></dd>
                 <?php endif; ?>
 
                 <?php if ( $customer->last_booking_date ) : ?>
