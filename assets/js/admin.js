@@ -67,6 +67,9 @@
                     $('#end-time-display').text(endTime);
                 }
             });
+
+            // Appointment edit form AJAX submit
+            $(document).on('submit', '.guidepost-appointment-form', this.handleAppointmentSave.bind(this));
         },
 
         /**
@@ -262,6 +265,125 @@
             minutes = minutes < 10 ? '0' + minutes : minutes;
 
             return hours + ':' + minutes + ' ' + ampm;
+        },
+
+        /**
+         * Handle appointment form save via AJAX
+         */
+        handleAppointmentSave: function(e) {
+            e.preventDefault();
+
+            const $form = $(e.target);
+            const $submitBtn = $form.find('button[type="submit"]');
+            const originalBtnHtml = $submitBtn.html();
+
+            // Disable button, show loading
+            $submitBtn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Saving...');
+
+            // Collect form data
+            const formData = new FormData($form[0]);
+            formData.append('action', 'guidepost_update_appointment_ajax');
+            formData.append('nonce', $form.find('#guidepost_update_appointment_nonce').val());
+
+            const self = this;
+
+            $.ajax({
+                url: guidepost_admin.ajax_url,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        // Show success modal
+                        self.showSuccessModal(response.data.message);
+                    } else {
+                        // Show error
+                        self.showErrorMessage(response.data.message || 'Failed to save changes.');
+                    }
+                },
+                error: function() {
+                    self.showErrorMessage('Network error. Please try again.');
+                },
+                complete: function() {
+                    // Restore button
+                    $submitBtn.prop('disabled', false).html(originalBtnHtml);
+                }
+            });
+        },
+
+        /**
+         * Show success modal
+         */
+        showSuccessModal: function(message) {
+            // Remove existing modal
+            $('.guidepost-success-modal').remove();
+
+            const modal = $(`
+                <div class="guidepost-success-modal">
+                    <div class="guidepost-success-modal-content">
+                        <div class="guidepost-success-icon">
+                            <span class="dashicons dashicons-yes-alt"></span>
+                        </div>
+                        <p class="guidepost-success-message">${message}</p>
+                        <button type="button" class="button button-primary guidepost-success-close">Continue Editing</button>
+                    </div>
+                </div>
+            `);
+
+            $('body').append(modal);
+
+            // Auto-dismiss after 3 seconds
+            setTimeout(function() {
+                modal.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 3000);
+
+            // Close on button click
+            modal.find('.guidepost-success-close').on('click', function() {
+                modal.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            });
+
+            // Close on backdrop click
+            modal.on('click', function(e) {
+                if ($(e.target).is('.guidepost-success-modal')) {
+                    modal.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                }
+            });
+        },
+
+        /**
+         * Show error message
+         */
+        showErrorMessage: function(message) {
+            // Remove existing error
+            $('.guidepost-ajax-error').remove();
+
+            const error = $(`
+                <div class="guidepost-ajax-error notice notice-error">
+                    <p>${message}</p>
+                    <button type="button" class="notice-dismiss"></button>
+                </div>
+            `);
+
+            $('.guidepost-appointment-form').before(error);
+
+            // Dismiss button
+            error.find('.notice-dismiss').on('click', function() {
+                error.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            });
+
+            // Scroll to error
+            $('html, body').animate({
+                scrollTop: error.offset().top - 50
+            }, 300);
         }
     };
 

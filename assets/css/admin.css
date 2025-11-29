@@ -4051,3 +4051,76 @@
         padding-left: 0;
     }
 }
+
+/* ==========================================================================
+   AJAX Save Success Modal
+   ========================================================================== */
+.guidepost-success-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+}
+
+.guidepost-success-modal-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: guidepost-modal-in 0.3s ease;
+}
+
+@keyframes guidepost-modal-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.guidepost-success-icon {
+    margin-bottom: 20px;
+}
+
+.guidepost-success-icon .dashicons {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #46b450;
+}
+
+.guidepost-success-message {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.guidepost-success-close {
+    min-width: 150px;
+}
+
+/* AJAX Error Notice */
+.guidepost-ajax-error {
+    margin: 15px 0;
+}
+
+/* Spin animation for loading */
+.dashicons.spin {
+    animation: guidepost-spin 1s linear infinite;
+}
+
+@keyframes guidepost-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

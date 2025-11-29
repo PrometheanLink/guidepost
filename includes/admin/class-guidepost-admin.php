@@ -50,6 +50,7 @@ class GuidePost_Admin {
 
         // AJAX handlers
         add_action( 'wp_ajax_guidepost_update_appointment_status', array( $this, 'ajax_update_appointment_status' ) );
+        add_action( 'wp_ajax_guidepost_update_appointment_ajax', array( $this, 'ajax_update_appointment' ) );
     }
 
     /**
@@ -1814,6 +1815,86 @@ class GuidePost_Admin {
         wp_send_json_success( array(
             'message' => __( 'Status updated successfully.', 'guidepost' ),
             'status'  => $new_status,
+        ) );
+    }
+
+    /**
+     * AJAX handler for updating appointment (full form save)
+     */
+    public function ajax_update_appointment() {
+        check_ajax_referer( 'guidepost_update_appointment', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'guidepost' ) ) );
+        }
+
+        $appointment_id = isset( $_POST['appointment_id'] ) ? absint( $_POST['appointment_id'] ) : 0;
+        if ( ! $appointment_id ) {
+            wp_send_json_error( array( 'message' => __( 'Invalid appointment ID.', 'guidepost' ) ) );
+        }
+
+        global $wpdb;
+        $tables = GuidePost_Database::get_table_names();
+
+        // Get service duration for end_time calculation
+        $service_id = isset( $_POST['service_id'] ) ? absint( $_POST['service_id'] ) : 0;
+        $service = $wpdb->get_row( $wpdb->prepare(
+            "SELECT duration FROM {$tables['services']} WHERE id = %d",
+            $service_id
+        ) );
+
+        $booking_time = isset( $_POST['booking_time'] ) ? sanitize_text_field( $_POST['booking_time'] ) : '09:00';
+        $duration = $service ? $service->duration : 60;
+        $end_time = date( 'H:i:s', strtotime( $booking_time ) + ( $duration * 60 ) );
+
+        // Prepare data
+        $data = array(
+            'customer_id'      => isset( $_POST['customer_id'] ) ? absint( $_POST['customer_id'] ) : 0,
+            'service_id'       => $service_id,
+            'provider_id'      => isset( $_POST['provider_id'] ) ? absint( $_POST['provider_id'] ) : 0,
+            'booking_date'     => isset( $_POST['booking_date'] ) ? sanitize_text_field( $_POST['booking_date'] ) : '',
+            'booking_time'     => $booking_time,
+            'end_time'         => $end_time,
+            'status'           => isset( $_POST['status'] ) ? sanitize_text_field( $_POST['status'] ) : 'pending',
+            'appointment_mode' => isset( $_POST['appointment_mode'] ) ? sanitize_text_field( $_POST['appointment_mode'] ) : 'in_person',
+            'location'         => isset( $_POST['location'] ) ? sanitize_textarea_field( $_POST['location'] ) : '',
+            'meeting_platform' => isset( $_POST['meeting_platform'] ) ? sanitize_text_field( $_POST['meeting_platform'] ) : '',
+            'meeting_link'     => isset( $_POST['meeting_link'] ) ? esc_url_raw( $_POST['meeting_link'] ) : '',
+            'meeting_password' => isset( $_POST['meeting_password'] ) ? sanitize_text_field( $_POST['meeting_password'] ) : '',
+            'internal_notes'   => isset( $_POST['internal_notes'] ) ? sanitize_textarea_field( $_POST['internal_notes'] ) : '',
+            'admin_notes'      => isset( $_POST['admin_notes'] ) ? sanitize_textarea_field( $_POST['admin_notes'] ) : '',
+            'customer_notes'   => isset( $_POST['customer_notes'] ) ? sanitize_textarea_field( $_POST['customer_notes'] ) : '',
+            'follow_up_date'   => isset( $_POST['follow_up_date'] ) && ! empty( $_POST['follow_up_date'] ) ? sanitize_text_field( $_POST['follow_up_date'] ) : null,
+            'follow_up_notes'  => isset( $_POST['follow_up_notes'] ) ? sanitize_textarea_field( $_POST['follow_up_notes'] ) : '',
+            'credits_used'     => isset( $_POST['credits_used'] ) ? absint( $_POST['credits_used'] ) : 0,
+            'updated_at'       => current_time( 'mysql' ),
+        );
+
+        // Validate required fields
+        if ( empty( $data['customer_id'] ) || empty( $data['service_id'] ) || empty( $data['provider_id'] ) ||
+             empty( $data['booking_date'] ) || empty( $data['booking_time'] ) ) {
+            wp_send_json_error( array( 'message' => __( 'Please fill in all required fields.', 'guidepost' ) ) );
+        }
+
+        // Update database
+        $result = $wpdb->update(
+            $tables['appointments'],
+            $data,
+            array( 'id' => $appointment_id ),
+            array( '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s' ),
+            array( '%d' )
+        );
+
+        if ( false === $result ) {
+            wp_send_json_error( array( 'message' => __( 'Failed to update appointment.', 'guidepost' ) ) );
+        }
+
+        // Fire action hook
+        do_action( 'guidepost_appointment_updated', $appointment_id, $data );
+
+        wp_send_json_success( array(
+            'message'        => __( 'Changes saved successfully!', 'guidepost' ),
+            'appointment_id' => $appointment_id,
         ) );
     }
 }
