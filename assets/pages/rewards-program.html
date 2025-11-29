@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sojourn Rewards - Earn Credits, Unlock Experiences</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c16107;
+            --primary-dark: #a85206;
+            --primary-light: #e8a665;
+            --secondary: #2c3e50;
+            --accent: #95c93d;
+            --cream: #faf8f5;
+            --white: #ffffff;
+            --text: #333333;
+            --text-light: #666666;
+            --gold: #d4a853;
+            --bronze: #cd7f32;
+            --silver: #a8a8a8;
+            --platinum: #e5e4e2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: var(--cream);
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--secondary) 0%, #1a252f 100%);
+            color: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c16107' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            color: var(--primary-light);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        .credit-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px 32px;
+            margin-top: 20px;
+        }
+
+        .credit-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .credit-info {
+            text-align: left;
+        }
+
+        .credit-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .credit-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* How to Earn Section */
+        .earn-section {
+            background: var(--white);
+        }
+
+        .earn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .earn-card {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .earn-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: var(--primary-light);
+        }
+
+        .earn-card.featured {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+        }
+
+        .earn-card.featured .earn-credits {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .earn-icon {
+            width: 72px;
+            height: 72px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .earn-card.featured .earn-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .earn-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .earn-card p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .earn-credits {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Rewards Tiers */
+        .rewards-section {
+            background: var(--secondary);
+            color: var(--white);
+            padding: 80px 20px;
+        }
+
+        .rewards-section .section-header h2 {
+            color: var(--white);
+        }
+
+        .rewards-section .section-header p {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .reward-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reward-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .reward-card.tier-1::before { background: var(--bronze); }
+        .reward-card.tier-2::before { background: var(--silver); }
+        .reward-card.tier-3::before { background: var(--gold); }
+        .reward-card.tier-4::before { background: linear-gradient(90deg, var(--gold), var(--platinum), var(--gold)); }
+
+        .reward-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .reward-credits {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 8px;
+        }
+
+        .reward-credits span {
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+
+        .reward-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            color: var(--white);
+        }
+
+        .reward-card p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .reward-tag {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: var(--accent);
+            color: var(--secondary);
+            padding: 4px 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            transform: rotate(45deg);
+        }
+
+        /* How It Works */
+        .how-section {
+            background: var(--white);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .step {
+            text-align: center;
+            max-width: 280px;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -40px;
+            width: 40px;
+            height: 2px;
+            background: var(--primary-light);
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(193, 97, 7, 0.3);
+        }
+
+        .step h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--secondary);
+        }
+
+        .step p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--white);
+            color: var(--primary);
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background: var(--cream);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .faq-item h4 {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .faq-item h4::before {
+            content: 'Q';
+            background: var(--primary);
+            color: var(--white);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .faq-item p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            padding-left: 38px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--secondary);
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .step:not(:last-child)::after {
+                display: none;
+            }
+
+            .steps {
+                gap: 30px;
+            }
+
+            .reward-credits {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Introducing</div>
+            <h1>Sojourn <span>Rewards</span></h1>
+            <p>Your journey deserves to be celebrated. Earn credits for every step forward and unlock exclusive experiences along the way.</p>
+
+            <div class="credit-display">
+                <div class="credit-icon">&#9733;</div>
+                <div class="credit-info">
+                    <div class="credit-label">Your Balance</div>
+                    <div class="credit-amount">0 Credits</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Earn Section -->
+    <section class="section earn-section">
+        <div class="section-header">
+            <h2>Ways to Earn Credits</h2>
+            <p>Every action on your transformation journey brings you closer to exclusive rewards</p>
+        </div>
+
+        <div class="earn-grid">
+            <div class="earn-card featured">
+                <div class="earn-icon">&#128588;</div>
+                <h3>Share the Journey</h3>
+                <p>Refer a friend who books their first session and you both win</p>
+                <div class="earn-credits">+100 Credits</div>
+            </div>
+
+            <div class="earn-card">
+                <div class="earn-icon">&#127942;</div>
+                <h3>Stay Committed</h3>
+                <p>Complete 5 coaching sessions and earn bonus credits</p>
+                <div class="earn-credits">+25 Credits</div>
+            </div>
+
+            <div class="earn-card">
+                <div class="earn-icon">&#11088;</div>
+                <h3>Share Your Story</h3>
+                <p>Leave a Google review about your experience</p>
+                <div class="earn-credits">+50 Credits</div>
+            </div>
+
+            <div class="earn-card">
+                <div class="earn-icon">&#127881;</div>
+                <h3>Celebrate Milestones</h3>
+                <p>Reach 6 months or 10 sessions with us</p>
+                <div class="earn-credits">+50 Credits</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rewards Tiers -->
+    <section class="rewards-section">
+        <div class="section-header">
+            <h2>Unlock Your Rewards</h2>
+            <p>The more you engage, the more you unlock. Credits never expire.</p>
+        </div>
+
+        <div class="rewards-grid">
+            <div class="reward-card tier-1">
+                <div class="reward-credits">100 <span>credits</span></div>
+                <h3>Resource Bundle</h3>
+                <p>Exclusive workbooks, templates, and guided meditations curated for your journey</p>
+            </div>
+
+            <div class="reward-card tier-2">
+                <div class="reward-credits">250 <span>credits</span></div>
+                <h3>$50 Session Credit</h3>
+                <p>Apply toward any coaching session - Discovery, Extended, or VIP Day</p>
+            </div>
+
+            <div class="reward-card tier-3">
+                <div class="reward-credits">500 <span>credits</span></div>
+                <h3>Free Discovery Session</h3>
+                <p>A complimentary session for you or gift it to someone starting their journey</p>
+            </div>
+
+            <div class="reward-card tier-4">
+                <span class="reward-tag">Exclusive</span>
+                <div class="reward-credits">1000 <span>credits</span></div>
+                <h3>Retreat Invitation</h3>
+                <p>Priority access and special pricing to our transformational retreat experiences</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section how-section">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Simple, rewarding, and designed for your journey</p>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Engage</h3>
+                <p>Book sessions, refer friends, share reviews, and celebrate your milestones</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Earn</h3>
+                <p>Watch your credits grow with every meaningful action you take</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Redeem</h3>
+                <p>Choose rewards that enhance your journey - from resources to retreats</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section faq-section">
+        <div class="section-header">
+            <h2>Questions & Answers</h2>
+        </div>
+
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h4>Do credits expire?</h4>
+                <p>Never! Your credits are yours to keep and use whenever you're ready.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>How do referrals work?</h4>
+                <p>Share your unique referral link. When your friend books their first session, you both earn 100 credits.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I gift my rewards?</h4>
+                <p>Yes! The Free Discovery Session reward can be gifted to a friend or family member.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>How do I check my balance?</h4>
+                <p>Your credit balance is always visible in your customer dashboard after logging in.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Ready to Start Earning?</h2>
+        <p>Your transformation journey comes with rewards. Book your next session and start earning today.</p>
+        <a href="#book" class="cta-button">Book a Session</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Sojourn Rewards is part of the Sojourn Coaching experience.<br>Credits are non-transferable and have no cash value.</p>
+    </footer>
+
+</body>
+</html>
