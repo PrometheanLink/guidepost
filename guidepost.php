@@ -74,6 +74,7 @@ final class GuidePost {
         require_once GUIDEPOST_PLUGIN_DIR . 'includes/admin/class-guidepost-admin.php';
         require_once GUIDEPOST_PLUGIN_DIR . 'includes/admin/class-guidepost-communications.php';
         require_once GUIDEPOST_PLUGIN_DIR . 'includes/admin/class-guidepost-customers.php';
+        require_once GUIDEPOST_PLUGIN_DIR . 'includes/admin/class-guidepost-backup.php';
 
         // Frontend classes
         require_once GUIDEPOST_PLUGIN_DIR . 'includes/frontend/class-guidepost-shortcodes.php';
@@ -123,6 +124,7 @@ final class GuidePost {
         GuidePost_Admin::get_instance();
         GuidePost_Communications::get_instance();
         GuidePost_Customers::get_instance();
+        GuidePost_Backup::get_instance();
 
         // Initialize WooCommerce integration (WooCommerce is loaded by now)
         if ( class_exists( 'WooCommerce' ) ) {

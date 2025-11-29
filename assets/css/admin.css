@@ -3604,3 +3604,276 @@
     width: auto;
     margin: 0;
 }
+
+/* ==========================================================================
+   Backup & Restore Page
+   ========================================================================== */
+
+.guidepost-backup-page {
+    max-width: 900px;
+}
+
+.guidepost-backup-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.guidepost-backup-section {
+    background: #fff;
+    border: 1px solid var(--gp-border);
+    border-radius: 8px;
+    padding: 25px;
+}
+
+.guidepost-backup-section h2 {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+    color: var(--gp-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.guidepost-backup-section h2 .dashicons {
+    color: var(--gp-primary);
+}
+
+.guidepost-backup-section h3 {
+    margin: 20px 0 15px;
+    font-size: 0.95rem;
+    color: var(--gp-text);
+    border-bottom: 1px solid var(--gp-border);
+    padding-bottom: 8px;
+}
+
+.guidepost-backup-section > .description {
+    color: var(--gp-text-light);
+    margin: 0 0 20px;
+    font-size: 13px;
+}
+
+/* Backup Options Checkboxes */
+.guidepost-backup-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.guidepost-backup-options p {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 13px;
+}
+
+.guidepost-backup-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--gp-bg-light);
+    border: 1px solid var(--gp-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.guidepost-backup-option:hover {
+    border-color: var(--gp-primary);
+    background: #fff;
+}
+
+.guidepost-backup-option input[type="checkbox"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.guidepost-backup-option input[type="checkbox"]:disabled {
+    opacity: 0.7;
+}
+
+.guidepost-backup-option span {
+    font-size: 13px;
+    color: var(--gp-text);
+}
+
+/* Backup Button */
+#guidepost-create-backup-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#guidepost-create-backup-btn .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+/* Existing Backups Table */
+.guidepost-backup-section .wp-list-table {
+    margin: 0;
+}
+
+.guidepost-backup-section .wp-list-table th,
+.guidepost-backup-section .wp-list-table td {
+    padding: 12px 15px;
+}
+
+.guidepost-backup-section .wp-list-table td .button {
+    margin-right: 5px;
+}
+
+.guidepost-backup-section .wp-list-table td .button:last-child {
+    margin-right: 0;
+}
+
+/* Restore Options */
+.guidepost-backup-section fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.guidepost-backup-section .form-table th {
+    width: 160px;
+    padding-left: 0;
+}
+
+/* Backup Modal */
+#guidepost-restore-modal .guidepost-modal-content {
+    max-width: 600px;
+}
+
+#guidepost-restore-modal h2 {
+    margin: 0 0 20px;
+    font-size: 1.3rem;
+    color: var(--gp-text);
+}
+
+#guidepost-restore-modal h3 {
+    margin: 20px 0 12px;
+    font-size: 0.95rem;
+    color: var(--gp-text);
+}
+
+#restore-backup-info {
+    background: var(--gp-bg-light);
+    border: 1px solid var(--gp-border);
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+#restore-backup-info p {
+    margin: 5px 0;
+    font-size: 13px;
+}
+
+#restore-tables-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+#restore-tables-list label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--gp-bg-light);
+    border: 1px solid var(--gp-border);
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#restore-tables-list label:hover {
+    border-color: var(--gp-primary);
+}
+
+/* Restore Warning */
+.guidepost-modal-warning {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    margin: 20px 0;
+    color: #856404;
+    font-size: 13px;
+}
+
+.guidepost-modal-warning .dashicons {
+    color: #856404;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* Delete Backup Button */
+.guidepost-delete-backup-btn {
+    color: #a00 !important;
+}
+
+.guidepost-delete-backup-btn:hover {
+    background: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+/* Progress Indicator */
+.guidepost-backup-progress {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #e8f4fd;
+    border: 1px solid #bee5eb;
+    border-radius: 6px;
+    margin-top: 15px;
+}
+
+.guidepost-backup-progress.active {
+    display: flex;
+}
+
+.guidepost-backup-progress .spinner {
+    float: none;
+    margin: 0;
+}
+
+.guidepost-backup-progress-text {
+    font-size: 13px;
+    color: #0c5460;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .guidepost-backup-options {
+        grid-template-columns: 1fr;
+    }
+
+    #restore-tables-list {
+        grid-template-columns: 1fr;
+    }
+
+    .guidepost-backup-section .form-table th {
+        width: auto;
+        display: block;
+        padding-bottom: 5px;
+    }
+
+    .guidepost-backup-section .form-table td {
+        display: block;
+        padding-left: 0;
+    }
+}

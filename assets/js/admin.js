@@ -973,11 +973,192 @@
         }
     };
 
+    /**
+     * Backup & Restore Module
+     */
+    const GuidePostBackup = {
+        /**
+         * Initialize
+         */
+        init: function() {
+            if (!$('.guidepost-backup-page').length) {
+                return;
+            }
+
+            this.bindEvents();
+        },
+
+        /**
+         * Bind events
+         */
+        bindEvents: function() {
+            // Restore button click (opens modal)
+            $(document).on('click', '.guidepost-restore-btn', this.openRestoreModal.bind(this));
+
+            // Delete backup confirmation
+            $(document).on('click', '.guidepost-delete-backup-btn', this.confirmDelete.bind(this));
+
+            // Modal close
+            $(document).on('click', '.guidepost-modal-close, .guidepost-modal-cancel', this.closeModal.bind(this));
+            $(document).on('click', '#guidepost-restore-modal', function(e) {
+                if ($(e.target).is('#guidepost-restore-modal')) {
+                    $(this).hide();
+                }
+            });
+
+            // Select all / deselect all for restore tables
+            $(document).on('click', '#select-all-tables', this.selectAllTables.bind(this));
+            $(document).on('click', '#deselect-all-tables', this.deselectAllTables.bind(this));
+        },
+
+        /**
+         * Open restore modal and load backup info
+         */
+        openRestoreModal: function(e) {
+            e.preventDefault();
+
+            const filename = $(e.currentTarget).data('backup');
+            const self = this;
+
+            // Set filename in hidden field
+            $('#restore-backup-filename').val(filename);
+
+            // Show loading in modal
+            $('#restore-backup-info').html('<p>Loading backup information...</p>');
+            $('#restore-tables-list').empty();
+
+            // Show modal
+            $('#guidepost-restore-modal').show();
+
+            // Load backup info via AJAX
+            $.ajax({
+                url: guidepost_admin.ajax_url,
+                method: 'POST',
+                data: {
+                    action: 'guidepost_get_backup_info',
+                    nonce: guidepost_admin.nonce,
+                    filename: filename
+                },
+                success: function(response) {
+                    if (response.success) {
+                        self.displayBackupInfo(response.data);
+                    } else {
+                        $('#restore-backup-info').html('<p style="color: #dc3545;">Error: ' + (response.data.message || 'Failed to load backup info') + '</p>');
+                    }
+                },
+                error: function() {
+                    $('#restore-backup-info').html('<p style="color: #dc3545;">Failed to load backup information.</p>');
+                }
+            });
+        },
+
+        /**
+         * Display backup info in modal
+         */
+        displayBackupInfo: function(data) {
+            const tableLabels = {
+                'services': 'Services',
+                'providers': 'Providers',
+                'customers': 'Customers',
+                'appointments': 'Appointments',
+                'payments': 'Payments',
+                'customer_notes': 'Customer Notes',
+                'customer_flags': 'Customer Flags',
+                'customer_documents': 'Customer Documents',
+                'customer_purchases': 'Customer Purchases',
+                'credit_history': 'Credit History',
+                'provider_services': 'Provider-Service Mappings',
+                'working_hours': 'Working Hours',
+                'days_off': 'Days Off',
+                'email_templates': 'Email Templates',
+                'notifications': 'Notification History'
+            };
+
+            // Display backup info
+            let infoHtml = '<p><strong>Created:</strong> ' + data.created_at + '</p>';
+            infoHtml += '<p><strong>Plugin Version:</strong> ' + data.plugin_version + '</p>';
+            infoHtml += '<p><strong>Site:</strong> ' + data.site_url + '</p>';
+
+            if (data.record_counts) {
+                let totalRecords = 0;
+                for (const key in data.record_counts) {
+                    totalRecords += data.record_counts[key];
+                }
+                infoHtml += '<p><strong>Total Records:</strong> ' + totalRecords + '</p>';
+            }
+
+            $('#restore-backup-info').html(infoHtml);
+
+            // Display table selection checkboxes
+            const tables = data.tables_included || [];
+            let tablesHtml = '';
+
+            // Add select all / deselect all buttons
+            tablesHtml += '<div style="grid-column: 1 / -1; margin-bottom: 10px;">';
+            tablesHtml += '<button type="button" class="button button-small" id="select-all-tables">Select All</button> ';
+            tablesHtml += '<button type="button" class="button button-small" id="deselect-all-tables">Deselect All</button>';
+            tablesHtml += '</div>';
+
+            tables.forEach(function(table) {
+                const label = tableLabels[table] || table;
+                const count = data.record_counts && data.record_counts[table] ? ' (' + data.record_counts[table] + ')' : '';
+                tablesHtml += '<label>';
+                tablesHtml += '<input type="checkbox" name="restore_tables[]" value="' + table + '" checked>';
+                tablesHtml += ' ' + label + count;
+                tablesHtml += '</label>';
+            });
+
+            // Add settings option if included
+            if (data.includes_settings) {
+                tablesHtml += '<label>';
+                tablesHtml += '<input type="checkbox" name="restore_tables[]" value="settings" checked>';
+                tablesHtml += ' Plugin Settings';
+                tablesHtml += '</label>';
+            }
+
+            $('#restore-tables-list').html(tablesHtml);
+        },
+
+        /**
+         * Select all tables
+         */
+        selectAllTables: function(e) {
+            e.preventDefault();
+            $('#restore-tables-list input[type="checkbox"]').prop('checked', true);
+        },
+
+        /**
+         * Deselect all tables
+         */
+        deselectAllTables: function(e) {
+            e.preventDefault();
+            $('#restore-tables-list input[type="checkbox"]').prop('checked', false);
+        },
+
+        /**
+         * Confirm delete
+         */
+        confirmDelete: function(e) {
+            if (!confirm('Are you sure you want to delete this backup? This action cannot be undone.')) {
+                e.preventDefault();
+                return false;
+            }
+        },
+
+        /**
+         * Close modal
+         */
+        closeModal: function() {
+            $('#guidepost-restore-modal').hide();
+        }
+    };
+
     // Initialize on DOM ready
     $(document).ready(function() {
         GuidePostAdmin.init();
         GuidePostCommunications.init();
         GuidePostCustomers.init();
+        GuidePostBackup.init();
     });
 
 })(jQuery);
