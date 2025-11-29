@@ -280,10 +280,9 @@
             // Disable button, show loading
             $submitBtn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Saving...');
 
-            // Collect form data
+            // Collect form data (includes nonce field from wp_nonce_field)
             const formData = new FormData($form[0]);
             formData.append('action', 'guidepost_update_appointment_ajax');
-            formData.append('nonce', $form.find('#guidepost_update_appointment_nonce').val());
 
             const self = this;
 
@@ -293,19 +292,21 @@
                 data: formData,
                 processData: false,
                 contentType: false,
+                dataType: 'json',
                 success: function(response) {
-                    if (response.success) {
+                    if (response && response.success) {
                         // Show success modal
-                        self.showSuccessModal(response.data.message);
+                        self.showSuccessModal(response.data.message || 'Changes saved successfully!');
                     } else {
                         // Show error
-                        self.showErrorMessage(response.data.message || 'Failed to save changes.');
+                        self.showErrorMessage(response && response.data ? response.data.message : 'Failed to save changes.');
                     }
+                    // Restore button
+                    $submitBtn.prop('disabled', false).html(originalBtnHtml);
                 },
-                error: function() {
-                    self.showErrorMessage('Network error. Please try again.');
-                },
-                complete: function() {
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error, xhr.responseText);
+                    self.showErrorMessage('Save failed. Check console for details.');
                     // Restore button
                     $submitBtn.prop('disabled', false).html(originalBtnHtml);
                 }

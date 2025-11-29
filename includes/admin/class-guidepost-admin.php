@@ -81,8 +81,9 @@ class GuidePost_Admin {
             }
         }
 
-        // Handle appointment update
-        if ( isset( $_POST['guidepost_update_appointment_nonce'] ) &&
+        // Handle appointment update (skip if AJAX - handled by ajax_update_appointment)
+        if ( ! wp_doing_ajax() &&
+             isset( $_POST['guidepost_update_appointment_nonce'] ) &&
              wp_verify_nonce( $_POST['guidepost_update_appointment_nonce'], 'guidepost_update_appointment' ) ) {
             $this->handle_update_appointment();
         }
@@ -1822,7 +1823,7 @@ class GuidePost_Admin {
      * AJAX handler for updating appointment (full form save)
      */
     public function ajax_update_appointment() {
-        check_ajax_referer( 'guidepost_update_appointment', 'nonce' );
+        check_ajax_referer( 'guidepost_update_appointment', 'guidepost_update_appointment_nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( array( 'message' => __( 'Permission denied.', 'guidepost' ) ) );

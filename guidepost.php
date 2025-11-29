@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants
-define( 'GUIDEPOST_VERSION', '1.0.0' );
+define( 'GUIDEPOST_VERSION', '1.0.3' );
 define( 'GUIDEPOST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GUIDEPOST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'GUIDEPOST_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
